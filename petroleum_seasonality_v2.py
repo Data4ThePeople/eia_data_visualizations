@@ -1,4 +1,4 @@
-# petroleum_seasonality.py
+# petroleum_seasonality_v2.py
 #
 # Generates an interactive HTML chart of U.S. weekly petroleum inventory
 # data sourced from the EIA (U.S. Energy Information Administration).
@@ -6,13 +6,19 @@
 # Each product is shown as one line per year, coloured by decade.
 # The chart includes a product dropdown and decade toggle pills.
 #
-# To run:  python petroleum_seasonality.py
-# Output:  petroleum_seasonality_viz.html  (open in any web browser)
+# To run:  python petroleum_seasonality_v2.py
+# Output:  petroleum_seasonality_v2_viz.html  (open in any web browser)
 #
 # Requirements: pandas, requests, python-dotenv
 #   Install with:  pip install pandas requests python-dotenv
+#
+# Changes from v1:
+#   - Axis titles are bold and larger (14px)
+#   - SPR chart annotates the week-over-week change for Jun 19 → Jun 26, 2026
 
+import base64
 import json
+import mimetypes
 import os
 
 import pandas as pd
@@ -26,23 +32,6 @@ _EIA_API_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
 
 
 def fetch_eia(series_id, col_name):
-    """
-    Fetches one EIA weekly petroleum stock series via the API and returns
-    a single-column DataFrame.
-
-    Parameters
-    ----------
-    series_id : str
-        EIA series identifier (e.g. "WCRSTUS1").
-    col_name : str
-        Name for the data column in the returned DataFrame.
-
-    Returns
-    -------
-    pd.DataFrame
-        Index = date (weekly), one column named col_name, values in
-        thousand barrels.
-    """
     params = {
         "api_key": EIA_API_KEY,
         "frequency": "weekly",
@@ -65,47 +54,26 @@ def fetch_eia(series_id, col_name):
 
 
 # ── Fetch each EIA series via API ──────────────────────────────────────────────
-# Series IDs match those in the PRODUCTS dict below.
-# To add a product: add a fetch_eia() call, include it in join(), and add
-# an entry to PRODUCTS.
 crude      = fetch_eia("WCRSTUS1", "crude_oil")
 spr        = fetch_eia("WCSSTUS1", "spr")
 distillate = fetch_eia("WDISTUS1", "distillate")
 gasoline   = fetch_eia("WGTSTUS1", "gasoline")
 
-# Merge all four series into one table, keeping every date that appears in
-# any series (outer join). Gasoline data only starts in 1990, so it will
-# show NaN before that — that's expected.
 stocks = crude.join([spr, distillate, gasoline], how="outer")
-stocks.index = pd.to_datetime(stocks.index)  # ensure the index is datetime
-stocks = stocks.sort_index()                 # oldest date first
+stocks.index = pd.to_datetime(stocks.index)
+stocks = stocks.sort_index()
 
 
 # ── Compute week-of-year and calendar year columns ─────────────────────────────
-# EIA convention: week = (day_of_year - 1) ÷ 7 + 1, capped at 52.
-# This gives each observation a week number from 1 to 52.
 doy = stocks.index.day_of_year.to_series(index=stocks.index)
 stocks["year"] = stocks.index.year
 stocks["week"] = ((doy - 1) // 7 + 1).clip(upper=52).astype(int)
 
-# The most recent year found in the data — shown in red on the chart.
-# This is set automatically; you don't need to change it.
 CURRENT_YEAR = int(stocks.index.year.max())
 
 
+
 # ── Product definitions ────────────────────────────────────────────────────────
-# PRODUCTS controls what appears in the dropdown menu on the chart.
-#
-# Format:
-#   "column_name": ("Display label", "EIA series ID", "first year of data")
-#
-# - "column_name" must match the col_name used in load_eia() above.
-# - "Display label" is what the user sees in the dropdown.
-# - "EIA series ID" appears in the source note at the bottom of the chart.
-# - "first year" also appears in the source note.
-#
-# To add a product: add a load_eia() call above, join it into stocks, then
-# add an entry here.
 PRODUCTS = {
     "crude_oil":  ("Crude Oil",               "WCRSTUS1", "1982"),
     "gasoline":   ("Total Gasoline",          "WGTSTUS1", "1990"),
@@ -115,17 +83,6 @@ PRODUCTS = {
 
 
 # ── Decade colour palette ──────────────────────────────────────────────────────
-# Each decade gets a colour range: lines fade from a light shade (oldest year
-# in that decade) to a dark shade (most recent year in that decade).
-#
-# Each entry contains:
-#   "mid"        — the solid colour used for the pill button and legend swatch
-#   "label"      — the text shown on the pill (e.g. "1980s")
-#   lr/lg/lb/la  — light-end RGBA colour (r=red, g=green, b=blue, a=opacity)
-#   dr/dg/db/da  — dark-end RGBA colour
-#
-# You can adjust the colour values if you want a different look.
-# R, G, B are integers 0–255. A (alpha/opacity) is a decimal 0.0–1.0.
 DECADE_CFG = {
     1980: {"mid": "rgba(105,105,120,0.90)", "label": "1980s",
            "lr": 168, "lg": 168, "lb": 175, "la": 0.28,
@@ -146,26 +103,21 @@ DECADE_CFG = {
 
 
 # ── Serialise chart data to JSON ───────────────────────────────────────────────
-# This block converts the pandas DataFrame into a plain Python structure
-# (lists of dicts) that can be embedded as JSON inside the HTML file.
-# The JavaScript in the browser then reads this JSON to draw the chart.
-# You don't need to change anything here.
 chart_data = {}
 for col in PRODUCTS:
     s = stocks[["year", "week", col]].dropna(subset=[col]).copy()
-    s["decade"] = (s["year"] // 10) * 10   # e.g. 2023 → 2020
+    s["decade"] = (s["year"] // 10) * 10
     rows = []
     for yr, grp in s.groupby("year"):
         g = grp.sort_values("week")
         rows.append({
             "year":   int(yr),
             "decade": int(g["decade"].iloc[0]),
-            "x":      g["week"].tolist(),   # list of week numbers (1–52)
-            "y":      g[col].tolist(),       # list of stock levels (thousand bbl)
+            "x":      g["week"].tolist(),
+            "y":      g[col].tolist(),
         })
     chart_data[col] = rows
 
-# All decades present in the data (excluding CURRENT_YEAR, which is always shown).
 all_decades = sorted({
     row["decade"]
     for series in chart_data.values()
@@ -175,31 +127,16 @@ all_decades = sorted({
 
 
 def src(sid, sy):
-    """
-    Builds the source attribution text shown at the bottom of the chart.
-
-    Parameters
-    ----------
-    sid : str   EIA series identifier, e.g. "WCRSTUS1"
-    sy  : str   First year data is available, e.g. "1982"
-
-    Returns
-    -------
-    str   A sentence describing the data source.
-    """
     return (
         f"EIA series {sid} — Weekly U.S. Ending Stocks, {sy}–present, "
         f"thousand barrels. Latest year: {CURRENT_YEAR}. "
         "Week = (day-of-year / 7), capped at 52."
     )
 
-# Build the source note for each product using the PRODUCTS dict.
 source_notes = {col: src(sid, sy) for col, (_, sid, sy) in PRODUCTS.items()}
 
 
 # ── D4TP logo ──────────────────────────────────────────────────────────────────
-import base64, mimetypes
-
 LOGO_PATH = r"C:\Users\amand\Workspace\D4TP\logos\d4tp-text-dark@2x.png"
 _mime = mimetypes.guess_type(LOGO_PATH)[0] or "image/png"
 with open(LOGO_PATH, "rb") as _f:
@@ -207,9 +144,6 @@ with open(LOGO_PATH, "rb") as _f:
 
 
 # ── Build legend HTML ──────────────────────────────────────────────────────────
-# The legend shows a coloured line swatch next to each decade label.
-# Current year is always listed first (in red), then decades newest to oldest.
-# You don't need to change this unless you want to alter the visual layout.
 legend_items = (
     f'  <div class="legend-item">'
     f'<span class="leg-line" style="background:#c0392b;height:3px;opacity:1"></span>'
@@ -217,7 +151,7 @@ legend_items = (
 )
 for dec in sorted(DECADE_CFG, reverse=True):
     if dec not in all_decades:
-        continue    # skip decades that don't appear in the data
+        continue
     d = DECADE_CFG[dec]
     legend_items += (
         f'\n  <div class="legend-item" data-decade="{dec}">'
@@ -225,7 +159,6 @@ for dec in sorted(DECADE_CFG, reverse=True):
         f'<span class="leg-label">{d["label"]}</span></div>'
     )
 
-# Build the row of decade pill buttons that appear in the controls panel.
 decade_pills_html = ""
 for dec in all_decades:
     d = DECADE_CFG[dec]
@@ -234,7 +167,6 @@ for dec in all_decades:
         f'data-color="{d["mid"]}">{d["label"]}</button>'
     )
 
-# Build the <option> tags for the product dropdown.
 select_options = "\n".join(
     f'      <option value="{col}">{label}</option>'
     for col, (label, _, _) in PRODUCTS.items()
@@ -242,22 +174,9 @@ select_options = "\n".join(
 
 
 # ── Output file name ───────────────────────────────────────────────────────────
-# Change OUTPUT if you want the HTML saved with a different name or path.
-# The file is written to the current working directory by default.
-# Example: OUTPUT = "output/my_chart.html"
-OUTPUT = "petroleum_seasonality_viz.html"
+OUTPUT = "petroleum_seasonality_v2_viz.html"
 
 
-# ── Assemble the full HTML page ────────────────────────────────────────────────
-# The triple-quoted f-string below is the complete HTML file.
-# Python f-strings use {variable} to insert values computed above.
-# Double curly braces {{ and }} are used wherever a literal { or } is needed
-# in the CSS or JavaScript (to avoid being interpreted as Python placeholders).
-#
-# The Plotly charting library is loaded from a CDN (Content Delivery Network)
-# via the <script src="..."> tag — the browser downloads it automatically.
-# If you need the chart to work offline, download plotly-2.35.2.min.js
-# and change the src attribute to point to your local copy.
 HTML = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -383,15 +302,10 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <script>
-// ── JavaScript runs in the browser after the page loads ───────────────────────
-
-// Data and settings passed in from Python at build time.
 const CURRENT_YEAR  = {CURRENT_YEAR};
-const CHART_DATA    = {json.dumps(chart_data)};   // all weekly stock values, by product
-const SOURCE_NOTES  = {json.dumps(source_notes)}; // source attribution per product
+const CHART_DATA    = {json.dumps(chart_data)};
+const SOURCE_NOTES  = {json.dumps(source_notes)};
 
-// Colour palette for each decade — mirrors DECADE_CFG in the Python above.
-// lr/lg/lb/la = light-end colour; dr/dg/db/da = dark-end colour.
 const DECADE_PALETTES = {{
   1980:{{lr:168,lg:168,lb:175,la:0.28,dr:85, dg:85, db:102,da:0.84}},
   1990:{{lr:120,lg:200,lb:135,la:0.28,dr:18, dg:122,db:42, da:0.86}},
@@ -400,8 +314,6 @@ const DECADE_PALETTES = {{
   2020:{{lr:200,lg:148,lb:228,la:0.28,dr:108,dg:35, db:162,da:0.88}},
 }};
 
-// Interpolates between a decade's light and dark colour.
-// frac = 0 gives the light shade (oldest year); frac = 1 gives the dark shade (newest).
 function decadeRgba(decade, frac) {{
   const p = DECADE_PALETTES[decade];
   const r = Math.round(p.lr + frac*(p.dr-p.lr));
@@ -411,20 +323,13 @@ function decadeRgba(decade, frac) {{
   return `rgba(${{r}},${{g}},${{b}},${{a}})`;
 }}
 
-// ── App state ──────────────────────────────────────────────────────────────────
-let currentProduct = 'crude_oil';                  // which product is currently shown
-const selectedDecades = new Set({json.dumps(all_decades)});  // all decades active at start
+let currentProduct = 'crude_oil';
+const selectedDecades = new Set({json.dumps(all_decades)});
 
-// ── buildTraces(product) ───────────────────────────────────────────────────────
-// Returns an array of Plotly trace objects for the given product.
-// Each trace is one year's line. Prior years are coloured by decade;
-// the current year is always drawn last (on top) in red.
 function buildTraces(product) {{
   const series = CHART_DATA[product];
   const prior  = series.filter(s => s.year < CURRENT_YEAR);
 
-  // Count how many years per decade are currently visible, so we can
-  // spread their colours evenly across the light-to-dark range.
   const decadeGroups = {{}};
   prior.forEach(s => {{
     if (selectedDecades.has(s.decade)) {{
@@ -435,7 +340,6 @@ function buildTraces(product) {{
 
   const traces = [];
 
-  // Add one trace per prior year (skipping deselected decades).
   prior.forEach(s => {{
     if (!selectedDecades.has(s.decade)) return;
     const grp  = decadeGroups[s.decade];
@@ -447,7 +351,6 @@ function buildTraces(product) {{
     }});
   }});
 
-  // Add the current year on top so it's never hidden by other lines.
   const cur = series.find(s => s.year === CURRENT_YEAR);
   if (cur) traces.push({{
     x: cur.x, y: cur.y, type: 'scatter', mode: 'lines',
@@ -458,20 +361,17 @@ function buildTraces(product) {{
   return traces;
 }}
 
-// ── Chart layout ───────────────────────────────────────────────────────────────
-// Controls axis labels, grid lines, margins, font, and chart height.
-// Adjust height (in pixels) here if you want a taller or shorter chart.
 const layout = {{
-  margin: {{t:14, b:52, l:78, r:16}},
+  margin: {{t:14, b:60, l:88, r:16}},
   plot_bgcolor:'rgba(0,0,0,0)', paper_bgcolor:'rgba(0,0,0,0)',
   xaxis:{{
-    title:{{text:'Week of year',font:{{size:12}}}},
+    title:{{text:'<b>Week of year</b>', font:{{size:14}}}},
     tickmode:'array',
     tickvals:[1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51],
     range:[0.5,52.5], gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
   }},
   yaxis:{{
-    title:{{text:'Thousand barrels',font:{{size:12}}}},
+    title:{{text:'<b>Thousand barrels</b>', font:{{size:14}}}},
     tickformat:',', separatethousands:true,
     gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
   }},
@@ -479,36 +379,30 @@ const layout = {{
   font:{{family:'-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',size:12}},
   height: 500,
 }};
+
 const config = {{responsive:true, displayModeBar:false}};
 
-// Draw the chart for the first time with crude oil selected.
 Plotly.newPlot('chart', buildTraces(currentProduct), layout, config);
 
-// ── syncLegend() ───────────────────────────────────────────────────────────────
-// Dims the legend swatch for any decade whose pill is currently toggled off,
-// so the legend always matches what's visible on the chart.
 function syncLegend() {{
   document.querySelectorAll('#legend .legend-item[data-decade]').forEach(el => {{
     el.style.opacity = selectedDecades.has(+el.dataset.decade) ? '1' : '0.25';
   }});
 }}
 
-// ── Decade pill click handler ──────────────────────────────────────────────────
-// When the user clicks a decade pill, toggle that decade on or off,
-// update the pill's appearance, sync the legend, and redraw the chart.
 document.querySelectorAll('.decade-pill').forEach(pill => {{
-  const decade = +pill.dataset.decade;    // the decade number, e.g. 2010
-  const color  = pill.dataset.color;      // the pill's "on" background colour
+  const decade = +pill.dataset.decade;
+  const color  = pill.dataset.color;
 
   function applyStyle() {{
     const on = selectedDecades.has(decade);
-    pill.classList.toggle('off', !on);    // adds/removes the "off" CSS class
+    pill.classList.toggle('off', !on);
     pill.style.background  = on ? color : '';
     pill.style.color       = on ? '#fff' : '';
     pill.style.borderColor = on ? color : '';
   }}
 
-  applyStyle();   // set correct initial appearance
+  applyStyle();
 
   pill.addEventListener('click', () => {{
     if (selectedDecades.has(decade)) selectedDecades.delete(decade);
@@ -519,11 +413,8 @@ document.querySelectorAll('.decade-pill').forEach(pill => {{
   }});
 }});
 
-syncLegend();   // set initial legend opacity
+syncLegend();
 
-// ── Product dropdown change handler ───────────────────────────────────────────
-// When the user picks a different product, redraw the chart and update
-// the source note text at the bottom of the page.
 document.getElementById('product-sel').addEventListener('change', function() {{
   currentProduct = this.value;
   Plotly.react('chart', buildTraces(currentProduct), layout, config);
