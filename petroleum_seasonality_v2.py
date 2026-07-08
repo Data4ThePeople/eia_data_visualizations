@@ -63,6 +63,9 @@ stocks = crude.join([spr, distillate, gasoline], how="outer")
 stocks.index = pd.to_datetime(stocks.index)
 stocks = stocks.sort_index()
 
+# Sanity check that the API is returning the most recent data
+print(f"Last available week of data: {stocks.index.max():%Y-%m-%d}")
+
 
 # ── Compute week-of-year and calendar year columns ─────────────────────────────
 doy = stocks.index.day_of_year.to_series(index=stocks.index)
