@@ -105,7 +105,7 @@ DECADE_CFG = {
 }
 
 
-# ── Serialise chart data to JSON ───────────────────────────────────────────────
+# ── Serialize chart data to JSON ───────────────────────────────────────────────
 chart_data = {}
 for col in PRODUCTS:
     s = stocks[["year", "week", col]].dropna(subset=[col]).copy()
