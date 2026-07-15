@@ -1,0 +1,60 @@
+Purpose
+This visualization answers one question at a glance: is the current level of U.S. petroleum inventories normal, or not?
+
+Inventories — how much crude, gasoline, and diesel the country has in storage — are one of the clearest early signals of strain in the energy system. Plenty of cushion means the market can absorb a shock; stocks near the bottom of their range mean less room for error, and price starts doing the work inventory no longer can.
+
+The catch is that "normal" is seasonal. Stocks naturally rise and fall every year — gasoline builds ahead of summer driving, distillate ahead of winter heating — so a raw number tells you little on its own. The same level can be alarming in one month and ordinary in another. To know if today is unusual, you have to compare it to the same point in prior years.
+
+That's what this tool does. By laying every year on a common January-to-December axis, it shows the normal seasonal rhythm as a backdrop and lets you see exactly where the current year falls against it — so you can judge for yourself whether this year looks like the decades before it, or is breaking from the pattern.
+
+What this page is
+Every chart we publish should be something you can check, question, and rebuild yourself. This page documents exactly how we built the interactive inventory seasonality tool — where the data comes from, every transformation we applied, and the judgment calls we made along the way. Nothing here is proprietary. If you wanted to reproduce it from scratch, this page should get you there.
+
+The data source
+All inventory figures come from the U.S. Energy Information Administration (EIA), the statistical arm of the U.S. Department of Energy. The data is free, public, and updated weekly. We use four weekly stock series:
+
+Crude oil — series WCRSTUS1 (data back to 1982)
+Total gasoline — series WGTSTUS1 (data back to 1990)
+Distillate fuel oil / diesel — series WDISTUS1 (data back to 1982)
+Strategic Petroleum Reserve — series WCSSTUS1
+Each is reported in thousands of barrels. We download the full series history directly from each series' page on eia.gov as an Excel file. We do not alter, smooth, or adjust the underlying values.
+
+Step 1 — Start with what the EIA already gives you
+The EIA publishes each of these as a single long time series: one continuous line running left to right from the 1980s to today. It's accurate and complete, but it's built to show the long arc, not the current moment. On a forty-year line, this week is just the rightmost point — easy to glance past.
+
+That's the starting material. Everything we did from here is reorganization, not new data.
+
+Step 2 — Reshape the timeline into weeks-of-the-year
+Instead of plotting time continuously, we split each year into its own track and align them all on a common 1-to-52 week axis. Concretely, for every weekly observation we compute its week-of-year and group the readings by calendar year.
+
+We define week-of-year simply: week = ((day of year − 1) ÷ 7) + 1, capped at 52. This keeps a consistent week-to-week position across all years. (A note on precision below.)
+
+The result: instead of one long line, we get one line per year, all overlaid on the same January-to-December axis. This is the core move — and it's deliberately simple. We didn't model anything or introduce any new numbers. We changed the shape, not the substance.
+
+Step 3 — Handle the inevitable data quirks
+Real weekly data isn't perfectly clean, so two small rules:
+
+When the day-of-year math lands two readings in the same week bucket (which happens occasionally because EIA's reporting dates fall on Fridays and don't divide evenly into 7-day weeks), we average them.
+When a week bucket has no reading, we leave a gap and let the line bridge it rather than inventing a value.
+These choices affect at most a handful of points per year and don't change the shape of any line.
+
+Step 4 — Make the current year stand out
+We render every prior year as a faint grey line and the current year as a bold red line. This is purely a visual hierarchy choice, but it's the one that makes the chart legible: the grey lines become the historical "envelope" — the normal range and rhythm — and the red line is the character you're tracking against that backdrop.
+
+The current year is detected automatically from the latest data, so the highlight updates itself as new years begin.
+
+Step 5 — Let the reader hover
+The final step was adding interactivity: hover over any line to read its year and exact value, and read any single year against the full historical spread. This is the piece that, for us, turned the chart from something you look at into something you investigate.
+
+Updating
+We refresh the charts weekly. The process is mechanical: download the latest series files from the EIA, run our build script, and republish the output. Because the current-year highlight and date ranges update automatically, no manual editing of the chart is required — which means the published chart always reflects the most recent EIA release without us re-touching it by hand.
+
+Honest notes and limitations
+We'd rather tell you the edges of this than have you find them.
+
+The week-of-year convention is a simplification. Our (day-of-year ÷ 7) method gives each week a stable position across years, but EIA's actual report dates are Fridays and don't align perfectly week-to-week. An alternate convention (ISO weeks, or EIA's own week numbering) would shift a few points by one position. It does not change any line's overall shape or the story it tells.
+Weekly figures are EIA estimates and get revised. EIA's weekly numbers are timely estimates; they are periodically revised and later reconciled against more complete monthly data. We use the weekly series for currency, and accept that recent points may move slightly in later releases.
+History lengths differ by product. Gasoline begins in 1990; crude and distillate go back to 1982. So the gasoline chart simply has fewer historical lines behind it — not an error, just the limit of the public record.
+We did not invent the data, and we don't claim to have. Every number is the EIA's. Our contribution is the reorganization — the seasonal framing and the interactivity — not the underlying figures.
+Reproduce it yourself
+If you want to rebuild these charts, you need only the public EIA series listed above and any tool that can reshape a spreadsheet by week-of-year. The transformation is the five steps above. If you do it and get something different from us, we want to know — tell us, and we'll look.
