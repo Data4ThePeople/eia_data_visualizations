@@ -3,7 +3,7 @@
 # Generates an interactive HTML chart of U.S. weekly petroleum inventory
 # data sourced from the EIA (U.S. Energy Information Administration).
 #
-# Each product is shown as one line per year, coloured by decade.
+# Each product is shown as one line per year, colored by decade.
 # The chart includes a product dropdown and decade toggle pills.
 #
 # To run:  python petroleum_seasonality_v2.py
