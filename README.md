@@ -32,3 +32,51 @@ Three versioned HTML files, each opening directly in a browser (Plotly CDN, no s
 | `petroleum_seasonality_v3.html` | Adds decade toggle pills to filter which decades are shown |
 
 All versions show one line per year (1982–present) plotted by week of year (1–52). The current year is drawn in bold red; prior years are color-coded by decade (gray → green → blue → amber → purple, light-to-dark within each decade). A product dropdown switches between Crude Oil, Total Gasoline, Distillate (Diesel), and Strategic Reserve (SPR).
+
+## Publishing
+
+`publish_embed.ps1` publishes `petroleum_seasonality_v2_viz.html` to the local clone of the `Data4ThePeople/embeds` repo (`C:\Users\amand\Workspace\D4TP\embeds`). It pulls the embeds repo first (a colleague uploads to it daily), copies the file over, then commits and pushes. If the file is unchanged, it exits without committing.
+
+### How to run it, step by step
+
+1. **Open PowerShell.** Click the Start button (or press the Windows key), type `powershell`, and click **Windows PowerShell** in the results. A blue window with a blinking cursor will open — this is the terminal where you'll type the commands below. (Type each command at the prompt and press **Enter** to run it.)
+
+2. **Go to this project's folder.** Copy and paste this command into the PowerShell window, then press **Enter**:
+
+   ```powershell
+   cd C:\Users\amand\Workspace\D4TP\crude_oil\exploration
+   ```
+
+   The prompt should now end with `...\crude_oil\exploration>`, confirming you're in the right folder.
+
+3. **Run the script.** Type this and press **Enter**:
+
+   ```powershell
+   .\publish_embed.ps1
+   ```
+
+   (The `.\` at the start is required — it tells PowerShell to run the script from the current folder.)
+
+   This uses an automatic commit message like `petroleum seasonality viz update (2026-07-29)`. To write your own message instead, run it like this:
+
+   ```powershell
+   .\publish_embed.ps1 -Message "week 29, data up to 7/17/26"
+   ```
+
+4. **Check that it worked.** You should see a final line like:
+
+   ```
+   Published petroleum_seasonality_v2_viz.html to Data4ThePeople/embeds: <your message>
+   ```
+
+   If you instead see `Embeds repo already has this version ... nothing to publish`, that's fine — it means the published copy is already up to date and nothing needed to change.
+
+### Troubleshooting
+
+- **"running scripts is disabled on this system"** — PowerShell is blocking scripts. Run this once, press **Enter**, and answer `Y` when prompted, then try step 3 again:
+
+  ```powershell
+  Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+  ```
+
+- **"git pull failed"** or **"git push failed"** — there's a conflict or connection problem with the embeds repo. Nothing has been published; ask for help before rerunning.
