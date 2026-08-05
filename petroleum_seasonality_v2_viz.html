@@ -18,7 +18,7 @@
   }
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--bg-primary);}
+html,body{background:var(--bg-primary);overflow-x:hidden;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
       color:var(--text-primary);padding:20px;max-width:1100px;margin:0 auto;line-height:1.5;}
 .hdr{margin-bottom:14px;}
@@ -190,28 +190,60 @@ function buildTraces(product) {
   return traces;
 }
 
-const layout = {
-  margin: {t:14, b:60, l:88, r:16},
-  plot_bgcolor:'rgba(0,0,0,0)', paper_bgcolor:'rgba(0,0,0,0)',
-  xaxis:{
-    title:{text:'<b>Week of year</b>', font:{size:14}},
-    tickmode:'array',
-    tickvals:[1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51],
-    range:[0.5,52.5], gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
-  },
-  yaxis:{
-    title:{text:'<b>Thousand barrels</b>', font:{size:14}},
-    tickformat:',', separatethousands:true,
-    gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
-  },
-  showlegend: false,
-  font:{family:'-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',size:12},
-  height: 500,
+// Breakpoints mirror the CSS @media(max-width:700px) query — keep them in sync.
+function tierFor(w) { return w < 450 ? 'xs' : w < 700 ? 'sm' : 'lg'; }
+
+function tickvalsBy(step) {
+  const v = [];
+  for (let wk = 1; wk <= 52; wk += step) v.push(wk);
+  return v;
+}
+
+const TIER_CFG = {
+  lg: {height:500, margin:{t:14,b:60,l:88,r:16}, tickStep:2, titleSize:14, fontSize:12},
+  sm: {height:420, margin:{t:12,b:50,l:52,r:10}, tickStep:4, titleSize:12, fontSize:11},
+  xs: {height:370, margin:{t:12,b:46,l:48,r:8},  tickStep:8, titleSize:12, fontSize:11},
 };
+
+function layoutFor(tier) {
+  const c = TIER_CFG[tier];
+  const layout = {
+    margin: c.margin,
+    plot_bgcolor:'rgba(0,0,0,0)', paper_bgcolor:'rgba(0,0,0,0)',
+    xaxis:{
+      title:{text:'<b>Week of year</b>', font:{size:c.titleSize}},
+      tickmode:'array',
+      tickvals:tickvalsBy(c.tickStep),
+      range:[0.5,52.5], gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
+    },
+    yaxis:{
+      title:{text:'<b>Thousand barrels</b>', font:{size:c.titleSize}},
+      gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
+    },
+    showlegend: false,
+    font:{family:'-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',size:c.fontSize},
+    height: c.height,
+    uirevision: 'seasonality',
+  };
+  if (tier === 'lg') {
+    layout.yaxis.tickformat = ',';
+    layout.yaxis.separatethousands = true;
+  } else {
+    layout.yaxis.tickformat = '~s';   // "1.5M" — full values remain in the hover text
+    layout.yaxis.automargin = true;
+    layout.dragmode = false;          // don't trap page scroll on touch screens
+  }
+  return layout;
+}
+
+function currentLayout() { return layoutFor(tierFor(window.innerWidth)); }
 
 const config = {responsive:true, displayModeBar:false};
 
-Plotly.newPlot('chart', buildTraces(currentProduct), layout, config);
+// Re-measure once rendered: the initial render can add a scrollbar, and
+// Plotly's responsive handler doesn't notice the narrower viewport on its own.
+Plotly.newPlot('chart', buildTraces(currentProduct), currentLayout(), config)
+  .then(() => Plotly.Plots.resize('chart'));
 
 function syncLegend() {
   document.querySelectorAll('#legend .legend-item[data-decade]').forEach(el => {
@@ -238,15 +270,28 @@ document.querySelectorAll('.decade-pill').forEach(pill => {
     else                              selectedDecades.add(decade);
     applyStyle();
     syncLegend();
-    Plotly.react('chart', buildTraces(currentProduct), layout, config);
+    Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
   });
 });
 
 syncLegend();
 
+let lastTier = tierFor(window.innerWidth);
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const t = tierFor(window.innerWidth);
+    if (t !== lastTier) {
+      lastTier = t;
+      Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
+    }
+  }, 150);
+});
+
 document.getElementById('product-sel').addEventListener('change', function() {
   currentProduct = this.value;
-  Plotly.react('chart', buildTraces(currentProduct), layout, config);
+  Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
   document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
 });
 </script>
