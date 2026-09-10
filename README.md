@@ -33,6 +33,12 @@ Three versioned HTML files, each opening directly in a browser (Plotly CDN, no s
 
 All versions show one line per year (1982–present) plotted by week of year (1–52). The current year is drawn in bold red; prior years are color-coded by decade (gray → green → blue → amber → purple, light-to-dark within each decade). A product dropdown switches between Crude Oil, Total Gasoline, Distillate (Diesel), and Strategic Reserve (SPR).
 
+## Dot strip — where the current year stands
+
+`inventory_dot_strip.py` fetches the same four series via the EIA API and generates `inventory_dot_strip_viz.html`, a standalone dot-strip visualization. For a selected week of the year, every year (1982–present) is one dot on a horizontal axis in thousand barrels, so the current year can be compared against the full history at the same point in the season. Prior-year median, mean, and IQR are overlaid, and the header shows the current year's delta to the prior-year median and mean. Decade chips in the legend highlight a decade Tableau-style (everything else dims; the stats never change), a play button animates through the current year's weeks, and the week selector is capped at the latest week with current-year data. In dark mode the 2000s and 2020s dots use a lighter step of the same decade ramps to keep 3:1 contrast against the dark background.
+
+Run with `python inventory_dot_strip.py` (same dependencies as the seasonality script). This file is **not** published by `publish_embed.ps1`.
+
 ## Publishing
 
 `publish_embed.ps1` publishes `petroleum_seasonality_v2_viz.html` to the local clone of the `Data4ThePeople/embeds` repo (`C:\Users\amand\Workspace\D4TP\embeds`). It pulls the embeds repo first (a colleague uploads to it daily), copies the file over, then commits and pushes. If the file is unchanged, it exits without committing.

@@ -248,7 +248,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 .hdr p{{font-size:13px;color:var(--text-secondary);max-width:700px;}}
 .ctrls{{
   display:grid;
-  grid-template-columns:auto 1fr;
+  grid-template-columns:auto 1fr auto;
   gap:14px;
   margin-bottom:12px;padding:12px 14px;
   background:var(--bg-secondary);border-radius:10px;
@@ -293,6 +293,11 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
   background-size:100% 2px;background-position:0 center;background-repeat:no-repeat;}}
 .leg-label{{white-space:nowrap;}}
 #chart{{width:100%;}}
+#year-banner{{
+  position:absolute;top:10px;right:28px;z-index:5;pointer-events:none;
+  font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:0.02em;
+  font-variant-numeric:tabular-nums;opacity:0;transition:opacity 0.25s;
+}}
 .notes{{font-size:11px;color:var(--text-secondary);margin-top:12px;line-height:1.6;
         padding-top:12px;border-top:0.5px solid var(--border);}}
 .notes strong{{color:var(--text-primary);font-weight:500;}}
@@ -331,13 +336,24 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
       {decade_pills_html}
     </div>
   </div>
+  <div class="ctrl-grp">
+    <label>Replay</label>
+    <div class="decade-pills">
+      <button class="decade-pill" id="play-btn">&#9654; Play</button>
+      <button class="decade-pill" id="speed-2x">2&times;</button>
+      <button class="decade-pill" id="speed-3x">3&times;</button>
+    </div>
+  </div>
 </div>
 
 <div class="legend" id="legend">
 {legend_items}
 </div>
 
-<div id="chart"></div>
+<div id="chart-wrap" style="position:relative;">
+  <div id="chart"></div>
+  <div id="year-banner"></div>
+</div>
 
 <div class="notes">
   <strong>Source:</strong> <span id="source-note">{source_notes['crude_oil']}</span>
@@ -357,6 +373,7 @@ const INTERP_NOTES  = {json.dumps(interp_notes)};
 
 const AVG_LINE_COLOR = '{AVG_LINE}';
 const AVG_BAND_COLOR = '{AVG_BAND}';
+const DECADE_MID     = {json.dumps({d: c["mid"] for d, c in DECADE_CFG.items()})};
 
 const DECADE_PALETTES = {{
   1980:{{lr:110,lg:200,lb:225,la:0.28,dr:0,  dg:120,db:150,da:0.86}},
@@ -421,7 +438,8 @@ function computeAvgStats(product) {{
   return {{ weeks, mean, lower, upper }};
 }}
 
-function buildTraces(product) {{
+// Year traces in chronological order (prior years, then the current year).
+function buildYearTraces(product) {{
   const series = CHART_DATA[product];
   const prior  = series.filter(s => s.year < CURRENT_YEAR);
 
@@ -433,6 +451,32 @@ function buildTraces(product) {{
     }}
   }});
 
+  const priorTraces = [];
+  prior.forEach(s => {{
+    if (!selectedDecades.has(s.decade)) return;
+    const grp  = decadeGroups[s.decade];
+    const frac = grp.indexOf(s.year) / Math.max(grp.length - 1, 1);
+    priorTraces.push({{
+      x: s.x, y: s.y, type: 'scatter', mode: 'lines',
+      line: {{ color: decadeRgba(s.decade, frac), width: 1 }},
+      meta: {{ year: s.year, decade: s.decade }},
+      hovertemplate: `Year: ${{s.year}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
+    }});
+  }});
+
+  const cur = series.find(s => s.year === CURRENT_YEAR);
+  const curTrace = cur ? {{
+    x: cur.x, y: cur.y, type: 'scatter', mode: 'lines',
+    line: {{ color: '#c0392b', width: 2.8 }},
+    meta: {{ year: CURRENT_YEAR, decade: (CURRENT_YEAR / 10 | 0) * 10 }},
+    hovertemplate: `Year: ${{CURRENT_YEAR}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
+  }} : null;
+
+  return {{ priorTraces, curTrace }};
+}}
+
+function buildTraces(product) {{
+  const {{ priorTraces, curTrace }} = buildYearTraces(product);
   const traces = [];
 
   const stats = showAverage ? computeAvgStats(product) : null;
@@ -452,16 +496,7 @@ function buildTraces(product) {{
     }});
   }}
 
-  prior.forEach(s => {{
-    if (!selectedDecades.has(s.decade)) return;
-    const grp  = decadeGroups[s.decade];
-    const frac = grp.indexOf(s.year) / Math.max(grp.length - 1, 1);
-    traces.push({{
-      x: s.x, y: s.y, type: 'scatter', mode: 'lines',
-      line: {{ color: decadeRgba(s.decade, frac), width: 1 }},
-      hovertemplate: `Year: ${{s.year}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
-    }});
-  }});
+  priorTraces.forEach(t => traces.push(t));
 
   if (stats) {{
     traces.push({{
@@ -471,12 +506,7 @@ function buildTraces(product) {{
     }});
   }}
 
-  const cur = series.find(s => s.year === CURRENT_YEAR);
-  if (cur) traces.push({{
-    x: cur.x, y: cur.y, type: 'scatter', mode: 'lines',
-    line: {{ color: '#c0392b', width: 2.8 }},
-    hovertemplate: `Year: ${{CURRENT_YEAR}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
-  }});
+  if (curTrace) traces.push(curTrace);
 
   return traces;
 }}
@@ -571,7 +601,7 @@ document.querySelectorAll('.decade-pill[data-decade]').forEach(pill => {{
     else                              selectedDecades.add(decade);
     applyStyle();
     syncLegend();
-    Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
+    redraw();
   }});
 }});
 
@@ -587,8 +617,159 @@ avgPill.addEventListener('click', () => {{
   showAverage = !showAverage;
   styleAvgPill();
   syncLegend();
-  Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
+  redraw();
 }});
+
+// ── Replay animation: draw each year's line in chronological order ────────────
+const ANIM_SECONDS = 30;   // full history at 1x; the rate scales for subsets
+const playBtn   = document.getElementById('play-btn');
+const speedBtns = [[document.getElementById('speed-2x'), 2],
+                   [document.getElementById('speed-3x'), 3]];
+const yearBanner = document.getElementById('year-banner');
+let anim = null;
+let yAxisFrozen = false;   // y-range pinned during playback
+
+function updateAnimButtons() {{
+  playBtn.innerHTML = anim ? '&#9632; Stop' : '&#9654; Play';
+  speedBtns.forEach(([b, sp]) => {{
+    const on = anim && anim.speed === sp;
+    b.style.background  = on ? '#3a3a3a' : '';
+    b.style.color       = on ? '#fff' : '';
+    b.style.borderColor = on ? '#3a3a3a' : '';
+  }});
+}}
+
+// Every full redraw goes through here: it cancels any running playback and
+// unpins the y-axis so the chart returns to its normal autoranged state.
+function redraw() {{
+  if (anim) {{
+    cancelAnimationFrame(anim.raf);
+    anim = null;
+    updateAnimButtons();
+  }}
+  yearBanner.style.opacity = 0;
+  const lay = currentLayout();
+  if (yAxisFrozen) {{
+    lay.yaxis.autorange = true;
+    yAxisFrozen = false;
+  }}
+  Plotly.react('chart', buildTraces(currentProduct), lay, config);
+}}
+
+function animStep(now) {{
+  if (!anim) return;
+  const target = Math.min(anim.total,
+    anim.prog0 + (now - anim.t0) / 1000 * anim.speed * anim.rate);
+  anim.lastPts = target;
+  let remaining = Math.floor(target);
+  const idxs = [], xs = [], ys = [];
+  let k = -1;   // the trace currently being drawn (last one with any points)
+  for (let i = 0; i < anim.full.length; i++) {{
+    const n = Math.min(anim.counts[i], remaining);
+    remaining -= n;
+    if (n > 0) k = i;
+    if (n !== anim.shown[i]) {{
+      anim.shown[i] = n;
+      idxs.push(i);
+      xs.push(anim.full[i].x.slice(0, n));
+      ys.push(anim.full[i].y.slice(0, n));
+    }}
+  }}
+
+  // Arrow head at the drawing tip, aimed at the next point to be drawn.
+  // angleref:'previous' angles the tip marker along anchor->tip, so aiming
+  // at the NEXT point means anchoring at its mirror across the tip.
+  if (k >= 0 && idxs.length) {{
+    const t = anim.full[k], n = anim.shown[k];
+    const tx = t.x[n - 1], ty = t.y[n - 1];
+    let px, py;
+    if (n < anim.counts[k]) {{        // mirror the next point through the tip
+      px = 2 * tx - t.x[n]; py = 2 * ty - t.y[n];
+    }} else if (n > 1) {{             // year complete: keep the travel direction
+      px = t.x[n - 2]; py = t.y[n - 2];
+    }} else {{ px = tx - 1; py = ty; }}
+    idxs.push(anim.arrowIdx);
+    xs.push([px, tx]);
+    ys.push([py, ty]);
+    if (k !== anim.curTrace) {{       // new year: recolor arrow, update banner
+      anim.curTrace = k;
+      const color = t.meta.year === CURRENT_YEAR ? '#c0392b' : DECADE_MID[t.meta.decade];
+      Plotly.restyle('chart', {{ 'marker.color': color }}, [anim.arrowIdx]);
+      yearBanner.textContent = t.meta.year;
+      yearBanner.style.color = color;
+      yearBanner.style.opacity = 1;
+    }}
+  }}
+
+  if (idxs.length) Plotly.restyle('chart', {{ x: xs, y: ys }}, idxs);
+  if (target >= anim.total) {{
+    redraw();   // playback finished: restore band, average, and autorange
+    return;
+  }}
+  anim.raf = requestAnimationFrame(animStep);
+}}
+
+function startAnimation(speed) {{
+  if (anim) {{ cancelAnimationFrame(anim.raf); anim = null; }}
+  const yt   = buildYearTraces(currentProduct);
+  const full = yt.priorTraces.concat(yt.curTrace ? [yt.curTrace] : []);
+  if (!full.length) {{ updateAnimButtons(); return; }}
+
+  // Pin the y-range to the final extent so axes don't rescale mid-draw.
+  let yMin = Infinity, yMax = -Infinity;
+  full.forEach(t => t.y.forEach(v => {{
+    if (v < yMin) yMin = v;
+    if (v > yMax) yMax = v;
+  }}));
+  const pad = 0.06 * (yMax - yMin || 1);
+  const lay = currentLayout();
+  lay.yaxis.range = [yMin - pad, yMax + pad];
+  lay.yaxis.autorange = false;
+  yAxisFrozen = true;
+
+  // 1x pace is calibrated so the FULL history takes ANIM_SECONDS; animating
+  // a subset of decades finishes proportionally sooner at the same pace.
+  const fullTotal = CHART_DATA[currentProduct].reduce((a, s) => a + s.x.length, 0);
+
+  const empty = full.map(t => Object.assign({{}}, t, {{ x: [], y: [] }}));
+  empty.push({{                        // the arrow head riding the drawing tip
+    x: [], y: [], type: 'scatter', mode: 'markers',
+    marker: {{ symbol: 'arrow', size: 14, angleref: 'previous',
+              color: '#3a3a3a', opacity: [0, 1] }},
+    hoverinfo: 'skip',
+  }});
+  Plotly.react('chart', empty, lay, config).then(() => {{
+    if (anim) return;   // superseded by another start before this one drew
+    anim = {{
+      speed, full,
+      counts: full.map(t => t.x.length),
+      total:  full.reduce((a, t) => a + t.x.length, 0),
+      shown:  full.map(() => 0),
+      rate:   fullTotal / ANIM_SECONDS,   // points per second at 1x
+      arrowIdx: full.length, curTrace: -1,
+      prog0: 0, lastPts: 0, t0: performance.now(), raf: 0,
+    }};
+    updateAnimButtons();
+    anim.raf = requestAnimationFrame(animStep);
+  }});
+}}
+
+function setAnimSpeed(sp) {{
+  if (anim) {{
+    anim.prog0 = anim.lastPts;   // rebase so the speed change is seamless
+    anim.t0    = performance.now();
+    anim.speed = sp;
+    updateAnimButtons();
+  }} else {{
+    startAnimation(sp);
+  }}
+}}
+
+playBtn.addEventListener('click', () => {{
+  if (anim) redraw();
+  else      startAnimation(1);
+}});
+speedBtns.forEach(([b, sp]) => b.addEventListener('click', () => setAnimSpeed(sp)));
 
 syncLegend();
 
@@ -600,14 +781,14 @@ window.addEventListener('resize', () => {{
     const t = tierFor(window.innerWidth);
     if (t !== lastTier) {{
       lastTier = t;
-      Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
+      redraw();
     }}
   }}, 150);
 }});
 
 document.getElementById('product-sel').addEventListener('change', function() {{
   currentProduct = this.value;
-  Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
+  redraw();
   document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
   const inote = INTERP_NOTES[currentProduct];
   document.getElementById('interp-note-row').hidden = !inote;
