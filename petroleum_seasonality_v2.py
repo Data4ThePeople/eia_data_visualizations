@@ -216,15 +216,205 @@ select_options = "\n".join(
 )
 
 
-# ── Output file name ───────────────────────────────────────────────────────────
-OUTPUT = "petroleum_seasonality_v2_viz.html"
+# ── Output files ───────────────────────────────────────────────────────────────
+# One render pass per file: the base viz (published to embeds, no animation
+# code at all) and the animated replay version.
+OUTPUT_BASE = "petroleum_seasonality_v2_viz.html"
+OUTPUT_ANIM = "petroleum_seasonality_animation.html"
 
 
-HTML = f"""<!DOCTYPE html>
+# ── Animation-only fragments ───────────────────────────────────────────────────
+# Plain strings (NOT f-strings), so JS/CSS braces are single here.
+
+REPLAY_CONTROLS_HTML = """  <div class="ctrl-grp">
+    <label>Replay</label>
+    <div class="decade-pills">
+      <button class="decade-pill" id="play-btn">&#9654; Play</button>
+      <button class="decade-pill" id="speed-2x">2&times;</button>
+      <button class="decade-pill" id="speed-3x">3&times;</button>
+    </div>
+  </div>
+"""
+
+BANNER_CSS = """#year-banner{
+  position:absolute;top:10px;right:28px;z-index:5;pointer-events:none;
+  font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:0.02em;
+  font-variant-numeric:tabular-nums;opacity:0;transition:opacity 0.25s;
+}
+"""
+
+CHART_BLOCK_ANIM = """<div id="chart-wrap" style="position:relative;">
+  <div id="chart"></div>
+  <div id="year-banner"></div>
+</div>"""
+
+ANIMATION_JS = """
+// ── Replay animation: draw each year's line in chronological order ────────────
+const ANIM_SECONDS = 30;   // full history at 1x; the rate scales for subsets
+const playBtn   = document.getElementById('play-btn');
+const speedBtns = [[document.getElementById('speed-2x'), 2],
+                   [document.getElementById('speed-3x'), 3]];
+const yearBanner = document.getElementById('year-banner');
+let anim = null;
+let yAxisFrozen = false;   // y-range pinned during playback
+
+function updateAnimButtons() {
+  playBtn.innerHTML = anim ? '&#9632; Stop' : '&#9654; Play';
+  speedBtns.forEach(([b, sp]) => {
+    const on = anim && anim.speed === sp;
+    b.style.background  = on ? '#3a3a3a' : '';
+    b.style.color       = on ? '#fff' : '';
+    b.style.borderColor = on ? '#3a3a3a' : '';
+  });
+}
+
+// Every full redraw goes through here: it cancels any running playback and
+// unpins the y-axis so the chart returns to its normal autoranged state.
+function redraw() {
+  if (anim) {
+    cancelAnimationFrame(anim.raf);
+    anim = null;
+    updateAnimButtons();
+  }
+  yearBanner.style.opacity = 0;
+  const lay = currentLayout();
+  if (yAxisFrozen) {
+    lay.yaxis.autorange = true;
+    yAxisFrozen = false;
+  }
+  Plotly.react('chart', buildTraces(currentProduct), lay, config);
+}
+
+function animStep(now) {
+  if (!anim) return;
+  const target = Math.min(anim.total,
+    anim.prog0 + (now - anim.t0) / 1000 * anim.speed * anim.rate);
+  anim.lastPts = target;
+  let remaining = Math.floor(target);
+  const idxs = [], xs = [], ys = [];
+  let k = -1;   // the trace currently being drawn (last one with any points)
+  for (let i = 0; i < anim.full.length; i++) {
+    const n = Math.min(anim.counts[i], remaining);
+    remaining -= n;
+    if (n > 0) k = i;
+    if (n !== anim.shown[i]) {
+      anim.shown[i] = n;
+      idxs.push(i);
+      xs.push(anim.full[i].x.slice(0, n));
+      ys.push(anim.full[i].y.slice(0, n));
+    }
+  }
+
+  // Arrow head at the drawing tip, aimed at the next point to be drawn.
+  // angleref:'previous' angles the tip marker along anchor->tip, so aiming
+  // at the NEXT point means anchoring at its mirror across the tip.
+  if (k >= 0 && idxs.length) {
+    const t = anim.full[k], n = anim.shown[k];
+    const tx = t.x[n - 1], ty = t.y[n - 1];
+    let px, py;
+    if (n < anim.counts[k]) {        // mirror the next point through the tip
+      px = 2 * tx - t.x[n]; py = 2 * ty - t.y[n];
+    } else if (n > 1) {             // year complete: keep the travel direction
+      px = t.x[n - 2]; py = t.y[n - 2];
+    } else { px = tx - 1; py = ty; }
+    idxs.push(anim.arrowIdx);
+    xs.push([px, tx]);
+    ys.push([py, ty]);
+    if (k !== anim.curTrace) {       // new year: recolor arrow, update banner
+      anim.curTrace = k;
+      const color = t.meta.year === CURRENT_YEAR ? '#c0392b' : DECADE_MID[t.meta.decade];
+      Plotly.restyle('chart', { 'marker.color': color }, [anim.arrowIdx]);
+      yearBanner.textContent = t.meta.year;
+      yearBanner.style.color = color;
+      yearBanner.style.opacity = 1;
+    }
+  }
+
+  if (idxs.length) Plotly.restyle('chart', { x: xs, y: ys }, idxs);
+  if (target >= anim.total) {
+    redraw();   // playback finished: restore band, average, and autorange
+    return;
+  }
+  anim.raf = requestAnimationFrame(animStep);
+}
+
+function startAnimation(speed) {
+  if (anim) { cancelAnimationFrame(anim.raf); anim = null; }
+  const yt   = buildYearTraces(currentProduct);
+  const full = yt.priorTraces.concat(yt.curTrace ? [yt.curTrace] : []);
+  if (!full.length) { updateAnimButtons(); return; }
+
+  // Keep the y-axis exactly where the resting chart has it — already sized
+  // to the selected inventory's full range — so Play never rescales it:
+  // the animation just clears the canvas and draws inside the same frame.
+  const gd = document.getElementById('chart');
+  const yRange = (gd._fullLayout ? gd._fullLayout.yaxis.range
+                                 : gd.layout.yaxis.range).slice();
+  const lay = currentLayout();
+  lay.yaxis.range = yRange;
+  lay.yaxis.autorange = false;
+  yAxisFrozen = true;
+
+  // 1x pace is calibrated so the FULL history takes ANIM_SECONDS; animating
+  // a subset of decades finishes proportionally sooner at the same pace.
+  const fullTotal = CHART_DATA[currentProduct].reduce((a, s) => a + s.x.length, 0);
+
+  const empty = full.map(t => Object.assign({}, t, { x: [], y: [] }));
+  empty.push({                        // the arrow head riding the drawing tip
+    x: [], y: [], type: 'scatter', mode: 'markers',
+    marker: { symbol: 'arrow', size: 14, angleref: 'previous',
+              color: '#3a3a3a', opacity: [0, 1] },
+    hoverinfo: 'skip',
+  });
+  Plotly.react('chart', empty, lay, config).then(() => {
+    if (anim) return;   // superseded by another start before this one drew
+    anim = {
+      speed, full,
+      counts: full.map(t => t.x.length),
+      total:  full.reduce((a, t) => a + t.x.length, 0),
+      shown:  full.map(() => 0),
+      rate:   fullTotal / ANIM_SECONDS,   // points per second at 1x
+      arrowIdx: full.length, curTrace: -1,
+      prog0: 0, lastPts: 0, t0: performance.now(), raf: 0,
+    };
+    updateAnimButtons();
+    anim.raf = requestAnimationFrame(animStep);
+  });
+}
+
+function setAnimSpeed(sp) {
+  if (anim) {
+    anim.prog0 = anim.lastPts;   // rebase so the speed change is seamless
+    anim.t0    = performance.now();
+    anim.speed = sp;
+    updateAnimButtons();
+  } else {
+    startAnimation(sp);
+  }
+}
+
+playBtn.addEventListener('click', () => {
+  if (anim) redraw();
+  else      startAnimation(1);
+});
+speedBtns.forEach(([b, sp]) => b.addEventListener('click', () => setAnimSpeed(sp)));
+"""
+
+
+def render_html(animation):
+    title_suffix    = " (Animated)" if animation else ""
+    ctrl_cols       = "auto 1fr auto" if animation else "auto 1fr"
+    replay_controls = REPLAY_CONTROLS_HTML if animation else ""
+    banner_css      = BANNER_CSS if animation else ""
+    chart_block     = CHART_BLOCK_ANIM if animation else '<div id="chart"></div>'
+    anim_js         = ANIMATION_JS if animation else ""
+    redraw_call     = ("redraw();" if animation else
+                       "Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);")
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>U.S. Petroleum Inventories - Weekly Seasonality</title>
+<title>U.S. Petroleum Inventories - Weekly Seasonality{title_suffix}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root {{
@@ -248,7 +438,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 .hdr p{{font-size:13px;color:var(--text-secondary);max-width:700px;}}
 .ctrls{{
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:{ctrl_cols};
   gap:14px;
   margin-bottom:12px;padding:12px 14px;
   background:var(--bg-secondary);border-radius:10px;
@@ -293,12 +483,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
   background-size:100% 2px;background-position:0 center;background-repeat:no-repeat;}}
 .leg-label{{white-space:nowrap;}}
 #chart{{width:100%;}}
-#year-banner{{
-  position:absolute;top:10px;right:28px;z-index:5;pointer-events:none;
-  font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:0.02em;
-  font-variant-numeric:tabular-nums;opacity:0;transition:opacity 0.25s;
-}}
-.notes{{font-size:11px;color:var(--text-secondary);margin-top:12px;line-height:1.6;
+{banner_css}.notes{{font-size:11px;color:var(--text-secondary);margin-top:12px;line-height:1.6;
         padding-top:12px;border-top:0.5px solid var(--border);}}
 .notes strong{{color:var(--text-primary);font-weight:500;}}
 .credit-bar{{display:flex;justify-content:flex-end;align-items:center;
@@ -336,24 +521,13 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
       {decade_pills_html}
     </div>
   </div>
-  <div class="ctrl-grp">
-    <label>Replay</label>
-    <div class="decade-pills">
-      <button class="decade-pill" id="play-btn">&#9654; Play</button>
-      <button class="decade-pill" id="speed-2x">2&times;</button>
-      <button class="decade-pill" id="speed-3x">3&times;</button>
-    </div>
-  </div>
-</div>
+{replay_controls}</div>
 
 <div class="legend" id="legend">
 {legend_items}
 </div>
 
-<div id="chart-wrap" style="position:relative;">
-  <div id="chart"></div>
-  <div id="year-banner"></div>
-</div>
+{chart_block}
 
 <div class="notes">
   <strong>Source:</strong> <span id="source-note">{source_notes['crude_oil']}</span>
@@ -601,7 +775,7 @@ document.querySelectorAll('.decade-pill[data-decade]').forEach(pill => {{
     else                              selectedDecades.add(decade);
     applyStyle();
     syncLegend();
-    redraw();
+    {redraw_call}
   }});
 }});
 
@@ -617,159 +791,9 @@ avgPill.addEventListener('click', () => {{
   showAverage = !showAverage;
   styleAvgPill();
   syncLegend();
-  redraw();
+  {redraw_call}
 }});
-
-// ── Replay animation: draw each year's line in chronological order ────────────
-const ANIM_SECONDS = 30;   // full history at 1x; the rate scales for subsets
-const playBtn   = document.getElementById('play-btn');
-const speedBtns = [[document.getElementById('speed-2x'), 2],
-                   [document.getElementById('speed-3x'), 3]];
-const yearBanner = document.getElementById('year-banner');
-let anim = null;
-let yAxisFrozen = false;   // y-range pinned during playback
-
-function updateAnimButtons() {{
-  playBtn.innerHTML = anim ? '&#9632; Stop' : '&#9654; Play';
-  speedBtns.forEach(([b, sp]) => {{
-    const on = anim && anim.speed === sp;
-    b.style.background  = on ? '#3a3a3a' : '';
-    b.style.color       = on ? '#fff' : '';
-    b.style.borderColor = on ? '#3a3a3a' : '';
-  }});
-}}
-
-// Every full redraw goes through here: it cancels any running playback and
-// unpins the y-axis so the chart returns to its normal autoranged state.
-function redraw() {{
-  if (anim) {{
-    cancelAnimationFrame(anim.raf);
-    anim = null;
-    updateAnimButtons();
-  }}
-  yearBanner.style.opacity = 0;
-  const lay = currentLayout();
-  if (yAxisFrozen) {{
-    lay.yaxis.autorange = true;
-    yAxisFrozen = false;
-  }}
-  Plotly.react('chart', buildTraces(currentProduct), lay, config);
-}}
-
-function animStep(now) {{
-  if (!anim) return;
-  const target = Math.min(anim.total,
-    anim.prog0 + (now - anim.t0) / 1000 * anim.speed * anim.rate);
-  anim.lastPts = target;
-  let remaining = Math.floor(target);
-  const idxs = [], xs = [], ys = [];
-  let k = -1;   // the trace currently being drawn (last one with any points)
-  for (let i = 0; i < anim.full.length; i++) {{
-    const n = Math.min(anim.counts[i], remaining);
-    remaining -= n;
-    if (n > 0) k = i;
-    if (n !== anim.shown[i]) {{
-      anim.shown[i] = n;
-      idxs.push(i);
-      xs.push(anim.full[i].x.slice(0, n));
-      ys.push(anim.full[i].y.slice(0, n));
-    }}
-  }}
-
-  // Arrow head at the drawing tip, aimed at the next point to be drawn.
-  // angleref:'previous' angles the tip marker along anchor->tip, so aiming
-  // at the NEXT point means anchoring at its mirror across the tip.
-  if (k >= 0 && idxs.length) {{
-    const t = anim.full[k], n = anim.shown[k];
-    const tx = t.x[n - 1], ty = t.y[n - 1];
-    let px, py;
-    if (n < anim.counts[k]) {{        // mirror the next point through the tip
-      px = 2 * tx - t.x[n]; py = 2 * ty - t.y[n];
-    }} else if (n > 1) {{             // year complete: keep the travel direction
-      px = t.x[n - 2]; py = t.y[n - 2];
-    }} else {{ px = tx - 1; py = ty; }}
-    idxs.push(anim.arrowIdx);
-    xs.push([px, tx]);
-    ys.push([py, ty]);
-    if (k !== anim.curTrace) {{       // new year: recolor arrow, update banner
-      anim.curTrace = k;
-      const color = t.meta.year === CURRENT_YEAR ? '#c0392b' : DECADE_MID[t.meta.decade];
-      Plotly.restyle('chart', {{ 'marker.color': color }}, [anim.arrowIdx]);
-      yearBanner.textContent = t.meta.year;
-      yearBanner.style.color = color;
-      yearBanner.style.opacity = 1;
-    }}
-  }}
-
-  if (idxs.length) Plotly.restyle('chart', {{ x: xs, y: ys }}, idxs);
-  if (target >= anim.total) {{
-    redraw();   // playback finished: restore band, average, and autorange
-    return;
-  }}
-  anim.raf = requestAnimationFrame(animStep);
-}}
-
-function startAnimation(speed) {{
-  if (anim) {{ cancelAnimationFrame(anim.raf); anim = null; }}
-  const yt   = buildYearTraces(currentProduct);
-  const full = yt.priorTraces.concat(yt.curTrace ? [yt.curTrace] : []);
-  if (!full.length) {{ updateAnimButtons(); return; }}
-
-  // Keep the y-axis exactly where the resting chart has it — already sized
-  // to the selected inventory's full range — so Play never rescales it:
-  // the animation just clears the canvas and draws inside the same frame.
-  const gd = document.getElementById('chart');
-  const yRange = (gd._fullLayout ? gd._fullLayout.yaxis.range
-                                 : gd.layout.yaxis.range).slice();
-  const lay = currentLayout();
-  lay.yaxis.range = yRange;
-  lay.yaxis.autorange = false;
-  yAxisFrozen = true;
-
-  // 1x pace is calibrated so the FULL history takes ANIM_SECONDS; animating
-  // a subset of decades finishes proportionally sooner at the same pace.
-  const fullTotal = CHART_DATA[currentProduct].reduce((a, s) => a + s.x.length, 0);
-
-  const empty = full.map(t => Object.assign({{}}, t, {{ x: [], y: [] }}));
-  empty.push({{                        // the arrow head riding the drawing tip
-    x: [], y: [], type: 'scatter', mode: 'markers',
-    marker: {{ symbol: 'arrow', size: 14, angleref: 'previous',
-              color: '#3a3a3a', opacity: [0, 1] }},
-    hoverinfo: 'skip',
-  }});
-  Plotly.react('chart', empty, lay, config).then(() => {{
-    if (anim) return;   // superseded by another start before this one drew
-    anim = {{
-      speed, full,
-      counts: full.map(t => t.x.length),
-      total:  full.reduce((a, t) => a + t.x.length, 0),
-      shown:  full.map(() => 0),
-      rate:   fullTotal / ANIM_SECONDS,   // points per second at 1x
-      arrowIdx: full.length, curTrace: -1,
-      prog0: 0, lastPts: 0, t0: performance.now(), raf: 0,
-    }};
-    updateAnimButtons();
-    anim.raf = requestAnimationFrame(animStep);
-  }});
-}}
-
-function setAnimSpeed(sp) {{
-  if (anim) {{
-    anim.prog0 = anim.lastPts;   // rebase so the speed change is seamless
-    anim.t0    = performance.now();
-    anim.speed = sp;
-    updateAnimButtons();
-  }} else {{
-    startAnimation(sp);
-  }}
-}}
-
-playBtn.addEventListener('click', () => {{
-  if (anim) redraw();
-  else      startAnimation(1);
-}});
-speedBtns.forEach(([b, sp]) => b.addEventListener('click', () => setAnimSpeed(sp)));
-
+{anim_js}
 syncLegend();
 
 let lastTier = tierFor(window.innerWidth);
@@ -780,14 +804,14 @@ window.addEventListener('resize', () => {{
     const t = tierFor(window.innerWidth);
     if (t !== lastTier) {{
       lastTier = t;
-      redraw();
+      {redraw_call}
     }}
   }}, 150);
 }});
 
 document.getElementById('product-sel').addEventListener('change', function() {{
   currentProduct = this.value;
-  redraw();
+  {redraw_call}
   document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
   const inote = INTERP_NOTES[currentProduct];
   document.getElementById('interp-note-row').hidden = !inote;
@@ -797,7 +821,8 @@ document.getElementById('product-sel').addEventListener('change', function() {{
 </body>
 </html>"""
 
-# ── Write the HTML file ────────────────────────────────────────────────────────
-with open(OUTPUT, "w", encoding="utf-8") as f:
-    f.write(HTML)
-print(f"Saved: {OUTPUT}  ({os.path.getsize(OUTPUT):,} bytes)")
+# ── Write both HTML files ──────────────────────────────────────────────────────
+for out, is_anim in ((OUTPUT_BASE, False), (OUTPUT_ANIM, True)):
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(render_html(is_anim))
+    print(f"Saved: {out}  ({os.path.getsize(out):,} bytes)")
