@@ -106,7 +106,7 @@ DECADE_CFG = {
 }
 
 # ── Average-overlay colours ────────────────────────────────────────────────────
-AVG_LINE = "rgba(17,17,17,0.95)"    # mean — dashed black; dots mark interpolated weeks
+AVG_LINE = "rgba(17,17,17,0.95)"    # mean — dashed black
 AVG_BAND = "rgba(128,128,128,0.18)" # ±1σ fill — light gray, faint by design
 AVG_PILL = "#3a3a3a"                # active pill (white text, AA contrast)
 
@@ -143,6 +143,30 @@ def src(sid, sy):
     )
 
 source_notes = {col: src(sid, sy) for col, (_, sid, sy) in PRODUCTS.items()}
+
+# Per-product note naming years whose interior missing weeks are interpolated
+# in the average/band calculation (empty string when a product has none).
+interp_notes = {}
+for col, rows in chart_data.items():
+    gap_years = sorted({
+        r["year"] for r in rows
+        if r["year"] < CURRENT_YEAR
+        and set(range(min(r["x"]), max(r["x"]) + 1)) - set(r["x"])
+    })
+    if not gap_years:
+        interp_notes[col] = ""
+        continue
+    if len(gap_years) == 1:
+        yrs = str(gap_years[0])
+    elif len(gap_years) == 2:
+        yrs = f"{gap_years[0]} and {gap_years[1]}"
+    else:
+        yrs = ", ".join(map(str, gap_years[:-1])) + f", and {gap_years[-1]}"
+    interp_notes[col] = (
+        f"A few weeks missing from the {yrs} weekly record are filled by "
+        "linear interpolation when computing the average and ±1σ band; "
+        "the plotted year lines leave those gaps open."
+    )
 
 
 # ── D4TP logo ──────────────────────────────────────────────────────────────────
@@ -317,6 +341,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 
 <div class="notes">
   <strong>Source:</strong> <span id="source-note">{source_notes['crude_oil']}</span>
+  <span id="interp-note-row"><br><strong>Note:</strong> <span id="interp-note">{interp_notes['crude_oil']}</span></span>
 </div>
 
 <div class="credit-bar">
@@ -328,6 +353,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 const CURRENT_YEAR  = {CURRENT_YEAR};
 const CHART_DATA    = {json.dumps(chart_data)};
 const SOURCE_NOTES  = {json.dumps(source_notes)};
+const INTERP_NOTES  = {json.dumps(interp_notes)};
 
 const AVG_LINE_COLOR = '{AVG_LINE}';
 const AVG_BAND_COLOR = '{AVG_BAND}';
@@ -356,7 +382,6 @@ let showAverage = true;
 
 function computeAvgStats(product) {{
   const perWeekVals = {{}};                 // week -> [one value per contributing year]
-  const interpWeeks = new Set();            // weeks where some year's value was interpolated
   CHART_DATA[product].forEach(s => {{
     if (s.year >= CURRENT_YEAR || !selectedDecades.has(s.decade)) return;
     const wk = {{}};                        // average duplicate week buckets within the year first
@@ -376,7 +401,6 @@ function computeAvgStats(product) {{
       let hi = w + 1; while (!wk[hi]) hi++;
       const vLo = wk[lo].sum / wk[lo].n, vHi = wk[hi].sum / wk[hi].n;
       wk[w] = {{ sum: vLo + (vHi - vLo) * (w - lo) / (hi - lo), n: 1 }};
-      interpWeeks.add(w);
     }}
     for (const w in wk) {{
       if (!perWeekVals[w]) perWeekVals[w] = [];
@@ -394,7 +418,7 @@ function computeAvgStats(product) {{
     const sd = Math.sqrt(vals.reduce((a, v) => a + (v - m) * (v - m), 0) / (vals.length - 1));  // sample std
     lower.push(m - sd); upper.push(m + sd);
   }});
-  return {{ weeks, mean, lower, upper, interpWeeks }};
+  return {{ weeks, mean, lower, upper }};
 }}
 
 function buildTraces(product) {{
@@ -444,15 +468,6 @@ function buildTraces(product) {{
       x: stats.weeks, y: stats.mean, type: 'scatter', mode: 'lines',
       line: {{ color: AVG_LINE_COLOR, width: 3, dash: 'dash' }},
       hovertemplate: 'Average (selected decades)<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>',
-    }});
-    const iw = stats.weeks
-      .map((w, i) => [w, i])
-      .filter(([w]) => stats.interpWeeks.has(w));
-    if (iw.length) traces.push({{
-      x: iw.map(([w]) => w), y: iw.map(([, i]) => stats.mean[i]),
-      type: 'scatter', mode: 'markers',
-      marker: {{ color: AVG_LINE_COLOR, size: 7 }},
-      hovertemplate: 'Average (incl. interpolated data)<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>',
     }});
   }}
 
@@ -522,17 +537,19 @@ Plotly.newPlot('chart', buildTraces(currentProduct), currentLayout(), config)
   .then(() => Plotly.Plots.resize('chart'));
 
 function syncLegend() {{
+  const bandOn = selectedDecades.size === ALL_DECADE_COUNT;
   document.querySelectorAll('#legend .legend-item[data-decade]').forEach(el => {{
     el.style.opacity = selectedDecades.has(+el.dataset.decade) ? '1' : '0.25';
   }});
   const avgItem = document.querySelector('#legend .legend-item[data-role="avg"]');
   if (avgItem) {{
     avgItem.style.opacity = (showAverage && selectedDecades.size) ? '1' : '0.25';
-    const bandOn = selectedDecades.size === ALL_DECADE_COUNT;
     avgItem.querySelector('.leg-label').textContent =
       bandOn ? 'Average ±1σ (all decades)' : 'Average (selected decades)';
     avgItem.querySelector('.leg-band').style.backgroundColor = bandOn ? '' : 'transparent';
   }}
+  const avgPillEl = document.getElementById('avg-pill');
+  if (avgPillEl) avgPillEl.textContent = bandOn ? 'Average ±1σ' : 'Average';
 }}
 
 document.querySelectorAll('.decade-pill[data-decade]').forEach(pill => {{
@@ -592,6 +609,9 @@ document.getElementById('product-sel').addEventListener('change', function() {{
   currentProduct = this.value;
   Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
   document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
+  const inote = INTERP_NOTES[currentProduct];
+  document.getElementById('interp-note-row').hidden = !inote;
+  document.getElementById('interp-note').textContent = inote;
 }});
 </script>
 </body>

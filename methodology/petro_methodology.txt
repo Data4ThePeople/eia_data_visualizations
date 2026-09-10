@@ -17,7 +17,7 @@ Crude oil — series WCRSTUS1 (data back to 1982)
 Total gasoline — series WGTSTUS1 (data back to 1990)
 Distillate fuel oil / diesel — series WDISTUS1 (data back to 1982)
 Strategic Petroleum Reserve — series WCSSTUS1
-Each is reported in thousands of barrels. We download the full series history directly from each series' page on eia.gov as an Excel file. We do not alter, smooth, or adjust the underlying values.
+Each is reported in thousands of barrels. We pull the full series history directly from the EIA's public API — the same numbers shown on each series' page on eia.gov. We do not alter, smooth, or adjust the underlying values.
 
 Step 1 — Start with what the EIA already gives you
 The EIA publishes each of these as a single long time series: one continuous line running left to right from the 1980s to today. It's accurate and complete, but it's built to show the long arc, not the current moment. On a forty-year line, this week is just the rightmost point — easy to glance past.
@@ -39,15 +39,24 @@ When a week bucket has no reading, we leave a gap and let the line bridge it rat
 These choices affect at most a handful of points per year and don't change the shape of any line.
 
 Step 4 — Make the current year stand out
-We render every prior year as a faint grey line and the current year as a bold red line. This is purely a visual hierarchy choice, but it's the one that makes the chart legible: the grey lines become the historical "envelope" — the normal range and rhythm — and the red line is the character you're tracking against that backdrop.
+We render every prior year as a thin line colored by its decade — one hue per decade, shading from light to dark as the decade progresses — and the current year as a bold red line. This is purely a visual hierarchy choice, but it's the one that makes the chart legible: the thin decade lines become the historical "envelope" — the normal range and rhythm — and the red line is the character you're tracking against that backdrop. Buttons above the chart toggle each decade's lines on and off, so you can compare this year against exactly the slice of history you care about.
 
 The current year is detected automatically from the latest data, so the highlight updates itself as new years begin.
 
 Step 5 — Let the reader hover
 The final step was adding interactivity: hover over any line to read its year and exact value, and read any single year against the full historical spread. This is the piece that, for us, turned the chart from something you look at into something you investigate.
 
+Step 6 — Draw the average and its normal band
+On top of the year lines we draw a summary: a dashed black line showing the average level for each week of the year, computed across the years in the decades currently selected — and always excluding the current year, so this year is never compared against itself. Toggle decades on or off and the average recomputes on the spot; the "Average" button switches the whole overlay off if you want the raw lines alone.
+
+Two details worth knowing:
+
+The average fills small interior gaps that the lines leave open. Rule 2 in step 3 says a missing week gets a gap, not an invented value — and the plotted year lines still work exactly that way. A per-week average is different, though: if one year skips a week, that week's average quietly changes membership, and when the skipped year sits far from the pack the average jumps up and down for no seasonal reason. This happens in practice — the earliest EIA weekly data has a handful of skipped weeks (1983 misses weeks 16, 18, and 21; 1982 misses 36–38). So, only inside the average calculation, we fill a year's interior missing weeks by drawing a straight line between its neighboring readings. A note beneath the chart says which years contain filled-in weeks. Gaps at the edge of a year's coverage are never filled — 1982's data doesn't begin until week 34, so 1982 simply joins the average from week 34 onward.
+
+The shaded band is one standard deviation, and it only appears with all decades selected. When every decade is on, the grey band shows ±1 standard deviation around the weekly average (sample standard deviation, over the same years as the average) — a plain description of how widely history has ranged at that point in the year. With only a decade or two selected we hide it deliberately: ten years of strongly trending stocks produce a "standard deviation" that mostly measures that era's trend, not seasonal spread, and an estimate from so few years is too noisy to draw honestly. The average line stays available for any selection; the band is reserved for the full history.
+
 Updating
-We refresh the charts weekly. The process is mechanical: download the latest series files from the EIA, run our build script, and republish the output. Because the current-year highlight and date ranges update automatically, no manual editing of the chart is required — which means the published chart always reflects the most recent EIA release without us re-touching it by hand.
+We refresh the charts weekly. The process is mechanical: run our build script — it pulls the latest data from the EIA's API — and republish the output. Because the current-year highlight and date ranges update automatically, no manual editing of the chart is required — which means the published chart always reflects the most recent EIA release without us re-touching it by hand.
 
 Honest notes and limitations
 We'd rather tell you the edges of this than have you find them.
@@ -55,6 +64,8 @@ We'd rather tell you the edges of this than have you find them.
 The week-of-year convention is a simplification. Our (day-of-year ÷ 7) method gives each week a stable position across years, but EIA's actual report dates are Fridays and don't align perfectly week-to-week. An alternate convention (ISO weeks, or EIA's own week numbering) would shift a few points by one position. It does not change any line's overall shape or the story it tells.
 Weekly figures are EIA estimates and get revised. EIA's weekly numbers are timely estimates; they are periodically revised and later reconciled against more complete monthly data. We use the weekly series for currency, and accept that recent points may move slightly in later releases.
 History lengths differ by product. Gasoline begins in 1990; crude and distillate go back to 1982. So the gasoline chart simply has fewer historical lines behind it — not an error, just the limit of the public record.
+The band is a description, not a forecast. ±1 standard deviation of history tells you where past years have tended to sit. It is not a confidence interval in the statistical sense, because years are not independent draws — inventories trend across decades. Read it as "the usual range," nothing stronger.
+The average leans on a few interpolated inputs. As described in step 6, six week-slots from 1982–83 are filled by straight-line interpolation before averaging. Leave them out and the average develops artificial jumps; fill them in and six of 52 weekly averages include a value we constructed rather than measured. We chose to fill them, and a note beneath the chart says so.
 We did not invent the data, and we don't claim to have. Every number is the EIA's. Our contribution is the reorganization — the seasonal framing and the interactivity — not the underlying figures.
 Reproduce it yourself
-If you want to rebuild these charts, you need only the public EIA series listed above and any tool that can reshape a spreadsheet by week-of-year. The transformation is the five steps above. If you do it and get something different from us, we want to know — tell us, and we'll look.
+If you want to rebuild these charts, you need only the public EIA series listed above and any tool that can reshape a spreadsheet by week-of-year. The transformation is the six steps above. If you do it and get something different from us, we want to know — tell us, and we'll look.
