@@ -715,15 +715,14 @@ function startAnimation(speed) {{
   const full = yt.priorTraces.concat(yt.curTrace ? [yt.curTrace] : []);
   if (!full.length) {{ updateAnimButtons(); return; }}
 
-  // Pin the y-range to the final extent so axes don't rescale mid-draw.
-  let yMin = Infinity, yMax = -Infinity;
-  full.forEach(t => t.y.forEach(v => {{
-    if (v < yMin) yMin = v;
-    if (v > yMax) yMax = v;
-  }}));
-  const pad = 0.06 * (yMax - yMin || 1);
+  // Keep the y-axis exactly where the resting chart has it — already sized
+  // to the selected inventory's full range — so Play never rescales it:
+  // the animation just clears the canvas and draws inside the same frame.
+  const gd = document.getElementById('chart');
+  const yRange = (gd._fullLayout ? gd._fullLayout.yaxis.range
+                                 : gd.layout.yaxis.range).slice();
   const lay = currentLayout();
-  lay.yaxis.range = [yMin - pad, yMax + pad];
+  lay.yaxis.range = yRange;
   lay.yaxis.autorange = false;
   yAxisFrozen = true;
 
