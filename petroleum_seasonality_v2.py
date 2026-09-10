@@ -88,9 +88,9 @@ PRODUCTS = {
 
 # ── Decade colour palette ──────────────────────────────────────────────────────
 DECADE_CFG = {
-    1980: {"mid": "rgba(105,105,120,0.90)", "label": "1980s",
-           "lr": 168, "lg": 168, "lb": 175, "la": 0.28,
-           "dr":  85, "dg":  85, "db": 102, "da": 0.84},
+    1980: {"mid": "rgba(0,140,175,0.90)",  "label": "1980s",
+           "lr": 110, "lg": 200, "lb": 225, "la": 0.28,
+           "dr":   0, "dg": 120, "db": 150, "da": 0.86},
     1990: {"mid": "rgba(18,122,42,0.90)",   "label": "1990s",
            "lr": 120, "lg": 200, "lb": 135, "la": 0.28,
            "dr":  18, "dg": 122, "db":  42, "da": 0.86},
@@ -104,6 +104,11 @@ DECADE_CFG = {
            "lr": 200, "lg": 148, "lb": 228, "la": 0.28,
            "dr": 108, "dg":  35, "db": 162, "da": 0.88},
 }
+
+# ── Average-overlay colours ────────────────────────────────────────────────────
+AVG_LINE = "rgba(17,17,17,0.95)"    # mean — dashed black; dots mark interpolated weeks
+AVG_BAND = "rgba(128,128,128,0.18)" # ±1σ fill — light gray, faint by design
+AVG_PILL = "#3a3a3a"                # active pill (white text, AA contrast)
 
 
 # ── Serialize chart data to JSON ───────────────────────────────────────────────
@@ -153,6 +158,11 @@ legend_items = (
     f'<span class="leg-line" style="background:#c0392b;height:3px;opacity:1"></span>'
     f'<span class="leg-label">{CURRENT_YEAR}</span></div>'
 )
+legend_items += (
+    f'\n  <div class="legend-item" data-role="avg">'
+    f'<span class="leg-band"></span>'
+    f'<span class="leg-label">Average &plusmn;1&sigma; (all decades)</span></div>'
+)
 for dec in sorted(DECADE_CFG, reverse=True):
     if dec not in all_decades:
         continue
@@ -170,6 +180,11 @@ for dec in all_decades:
         f'<button class="decade-pill active" data-decade="{dec}" '
         f'data-color="{d["mid"]}">{d["label"]}</button>'
     )
+
+decade_pills_html += (
+    f'<button class="decade-pill active" id="avg-pill" '
+    f'data-color="{AVG_PILL}">Average &plusmn;1&sigma;</button>'
+)
 
 select_options = "\n".join(
     f'      <option value="{col}">{label}</option>'
@@ -248,6 +263,10 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
          font-size:12px;color:var(--text-secondary);}}
 .legend-item{{display:flex;align-items:center;gap:7px;transition:opacity 0.15s;}}
 .leg-line{{display:inline-block;width:22px;height:2px;border-radius:1px;flex-shrink:0;}}
+.leg-band{{display:inline-block;width:22px;height:10px;border-radius:2px;flex-shrink:0;
+  background-color:rgba(128,128,128,0.35);
+  background-image:repeating-linear-gradient(90deg,{AVG_LINE} 0 4px,rgba(0,0,0,0) 4px 7px);
+  background-size:100% 2px;background-position:0 center;background-repeat:no-repeat;}}
 .leg-label{{white-space:nowrap;}}
 #chart{{width:100%;}}
 .notes{{font-size:11px;color:var(--text-secondary);margin-top:12px;line-height:1.6;
@@ -310,8 +329,11 @@ const CURRENT_YEAR  = {CURRENT_YEAR};
 const CHART_DATA    = {json.dumps(chart_data)};
 const SOURCE_NOTES  = {json.dumps(source_notes)};
 
+const AVG_LINE_COLOR = '{AVG_LINE}';
+const AVG_BAND_COLOR = '{AVG_BAND}';
+
 const DECADE_PALETTES = {{
-  1980:{{lr:168,lg:168,lb:175,la:0.28,dr:85, dg:85, db:102,da:0.84}},
+  1980:{{lr:110,lg:200,lb:225,la:0.28,dr:0,  dg:120,db:150,da:0.86}},
   1990:{{lr:120,lg:200,lb:135,la:0.28,dr:18, dg:122,db:42, da:0.86}},
   2000:{{lr:118,lg:168,lb:228,la:0.28,dr:10, dg:72, db:172,da:0.88}},
   2010:{{lr:248,lg:178,lb:82, la:0.28,dr:185,dg:85, db:5,  da:0.88}},
@@ -329,6 +351,51 @@ function decadeRgba(decade, frac) {{
 
 let currentProduct = 'crude_oil';
 const selectedDecades = new Set({json.dumps(all_decades)});
+const ALL_DECADE_COUNT = {len(all_decades)};
+let showAverage = true;
+
+function computeAvgStats(product) {{
+  const perWeekVals = {{}};                 // week -> [one value per contributing year]
+  const interpWeeks = new Set();            // weeks where some year's value was interpolated
+  CHART_DATA[product].forEach(s => {{
+    if (s.year >= CURRENT_YEAR || !selectedDecades.has(s.decade)) return;
+    const wk = {{}};                        // average duplicate week buckets within the year first
+    for (let i = 0; i < s.x.length; i++) {{
+      const w = s.x[i];
+      if (!wk[w]) wk[w] = {{sum: 0, n: 0}};
+      wk[w].sum += s.y[i]; wk[w].n++;
+    }}
+    // Interior gaps (e.g. 1983 skips weeks 16/18/21): fill by linear
+    // interpolation between the nearest reported weeks so the average
+    // doesn't jump when a low or high year drops out for one week.
+    // Leading/trailing gaps (1982 starts at week 34) stay unfilled.
+    const have = Object.keys(wk).map(Number).sort((a, b) => a - b);
+    for (let w = have[0] + 1; w < have[have.length - 1]; w++) {{
+      if (wk[w]) continue;
+      let lo = w - 1; while (!wk[lo]) lo--;
+      let hi = w + 1; while (!wk[hi]) hi++;
+      const vLo = wk[lo].sum / wk[lo].n, vHi = wk[hi].sum / wk[hi].n;
+      wk[w] = {{ sum: vLo + (vHi - vLo) * (w - lo) / (hi - lo), n: 1 }};
+      interpWeeks.add(w);
+    }}
+    for (const w in wk) {{
+      if (!perWeekVals[w]) perWeekVals[w] = [];
+      perWeekVals[w].push(wk[w].sum / wk[w].n);
+    }}
+  }});
+  const weeks = Object.keys(perWeekVals).map(Number).sort((a, b) => a - b);
+  if (!weeks.length) return null;
+  const mean = [], lower = [], upper = [];
+  weeks.forEach(w => {{
+    const vals = perWeekVals[w];
+    const m = vals.reduce((a, v) => a + v, 0) / vals.length;
+    mean.push(m);
+    if (vals.length < 2) {{ lower.push(null); upper.push(null); return; }}  // no band without 2+ years
+    const sd = Math.sqrt(vals.reduce((a, v) => a + (v - m) * (v - m), 0) / (vals.length - 1));  // sample std
+    lower.push(m - sd); upper.push(m + sd);
+  }});
+  return {{ weeks, mean, lower, upper, interpWeeks }};
+}}
 
 function buildTraces(product) {{
   const series = CHART_DATA[product];
@@ -344,6 +411,23 @@ function buildTraces(product) {{
 
   const traces = [];
 
+  const stats = showAverage ? computeAvgStats(product) : null;
+  // A std dev from one or two decades (~10-30 years) mostly reflects that
+  // era's trend, not seasonal spread — only band the full history.
+  const showBand = stats && selectedDecades.size === ALL_DECADE_COUNT;
+
+  if (showBand) {{
+    traces.push({{
+      x: stats.weeks, y: stats.lower, type: 'scatter', mode: 'lines',
+      line: {{ width: 0 }}, hoverinfo: 'skip', connectgaps: false,
+    }});
+    traces.push({{
+      x: stats.weeks, y: stats.upper, type: 'scatter', mode: 'lines',
+      line: {{ width: 0 }}, fill: 'tonexty', fillcolor: AVG_BAND_COLOR,
+      hoverinfo: 'skip', connectgaps: false,
+    }});
+  }}
+
   prior.forEach(s => {{
     if (!selectedDecades.has(s.decade)) return;
     const grp  = decadeGroups[s.decade];
@@ -354,6 +438,23 @@ function buildTraces(product) {{
       hovertemplate: `Year: ${{s.year}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
     }});
   }});
+
+  if (stats) {{
+    traces.push({{
+      x: stats.weeks, y: stats.mean, type: 'scatter', mode: 'lines',
+      line: {{ color: AVG_LINE_COLOR, width: 3, dash: 'dash' }},
+      hovertemplate: 'Average (selected decades)<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>',
+    }});
+    const iw = stats.weeks
+      .map((w, i) => [w, i])
+      .filter(([w]) => stats.interpWeeks.has(w));
+    if (iw.length) traces.push({{
+      x: iw.map(([w]) => w), y: iw.map(([, i]) => stats.mean[i]),
+      type: 'scatter', mode: 'markers',
+      marker: {{ color: AVG_LINE_COLOR, size: 7 }},
+      hovertemplate: 'Average (incl. interpolated data)<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>',
+    }});
+  }}
 
   const cur = series.find(s => s.year === CURRENT_YEAR);
   if (cur) traces.push({{
@@ -424,9 +525,17 @@ function syncLegend() {{
   document.querySelectorAll('#legend .legend-item[data-decade]').forEach(el => {{
     el.style.opacity = selectedDecades.has(+el.dataset.decade) ? '1' : '0.25';
   }});
+  const avgItem = document.querySelector('#legend .legend-item[data-role="avg"]');
+  if (avgItem) {{
+    avgItem.style.opacity = (showAverage && selectedDecades.size) ? '1' : '0.25';
+    const bandOn = selectedDecades.size === ALL_DECADE_COUNT;
+    avgItem.querySelector('.leg-label').textContent =
+      bandOn ? 'Average ±1σ (all decades)' : 'Average (selected decades)';
+    avgItem.querySelector('.leg-band').style.backgroundColor = bandOn ? '' : 'transparent';
+  }}
 }}
 
-document.querySelectorAll('.decade-pill').forEach(pill => {{
+document.querySelectorAll('.decade-pill[data-decade]').forEach(pill => {{
   const decade = +pill.dataset.decade;
   const color  = pill.dataset.color;
 
@@ -447,6 +556,21 @@ document.querySelectorAll('.decade-pill').forEach(pill => {{
     syncLegend();
     Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
   }});
+}});
+
+const avgPill = document.getElementById('avg-pill');
+function styleAvgPill() {{
+  avgPill.classList.toggle('off', !showAverage);
+  avgPill.style.background  = showAverage ? avgPill.dataset.color : '';
+  avgPill.style.color       = showAverage ? '#fff' : '';
+  avgPill.style.borderColor = showAverage ? avgPill.dataset.color : '';
+}}
+styleAvgPill();
+avgPill.addEventListener('click', () => {{
+  showAverage = !showAverage;
+  styleAvgPill();
+  syncLegend();
+  Plotly.react('chart', buildTraces(currentProduct), currentLayout(), config);
 }});
 
 syncLegend();
