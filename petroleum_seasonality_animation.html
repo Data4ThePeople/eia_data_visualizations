@@ -331,7 +331,9 @@ function layoutFor(tier) {
     showlegend: false,
     font:{family:'-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',size:c.fontSize},
     height: c.height,
-    uirevision: 'seasonality',
+    // Per-product revision: switching inventories discards the old axis
+    // state (ranges autorange fresh); same-product redraws preserve zoom.
+    uirevision: 'seasonality-' + currentProduct,
   };
   if (tier === 'lg') {
     layout.yaxis.tickformat = ',';
@@ -511,6 +513,9 @@ function startAnimation(speed) {
   const lay = currentLayout();
   lay.yaxis.range = yRange;
   lay.yaxis.autorange = false;
+  // Own revision for playback: leaving it (finish/stop/any redraw) changes
+  // the revision back, so the pinned range is fully discarded.
+  lay.uirevision = 'replay';
   yAxisFrozen = true;
 
   // 1x pace is calibrated so the FULL history takes ANIM_SECONDS; animating
