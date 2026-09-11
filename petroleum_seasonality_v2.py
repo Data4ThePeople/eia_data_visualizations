@@ -79,7 +79,7 @@ CURRENT_YEAR = int(stocks.index.year.max())
 
 # ── Product definitions ────────────────────────────────────────────────────────
 PRODUCTS = {
-    "crude_oil":  ("Crude Oil",               "WCRSTUS1", "1982"),
+    "crude_oil":  ("Crude Oil (incl. SPR)",   "WCRSTUS1", "1982"),
     "gasoline":   ("Total Gasoline",          "WGTSTUS1", "1990"),
     "distillate": ("Distillate (Diesel)",     "WDISTUS1", "1982"),
     "spr":        ("Strategic Reserve (SPR)", "WCSSTUS1", "1982"),
@@ -107,7 +107,7 @@ DECADE_CFG = {
 
 # ── Average-overlay colours ────────────────────────────────────────────────────
 AVG_LINE = "rgba(17,17,17,0.95)"    # mean — dashed black
-AVG_BAND = "rgba(128,128,128,0.18)" # ±1σ fill — light gray, faint by design
+AVG_BAND = "rgba(128,128,128,0.18)" # IQR fill — light gray, faint by design
 AVG_PILL = "#3a3a3a"                # active pill (white text, AA contrast)
 
 
@@ -164,7 +164,7 @@ for col, rows in chart_data.items():
         yrs = ", ".join(map(str, gap_years[:-1])) + f", and {gap_years[-1]}"
     interp_notes[col] = (
         f"A few weeks missing from the {yrs} weekly record are filled by "
-        "linear interpolation when computing the average and ±1σ band; "
+        "linear interpolation when computing the average and IQR band; "
         "the plotted year lines leave those gaps open."
     )
 
@@ -185,7 +185,7 @@ legend_items = (
 legend_items += (
     f'\n  <div class="legend-item" data-role="avg">'
     f'<span class="leg-band"></span>'
-    f'<span class="leg-label">Average &plusmn;1&sigma; (all decades)</span></div>'
+    f'<span class="leg-label">Average + IQR (all decades)</span></div>'
 )
 for dec in sorted(DECADE_CFG, reverse=True):
     if dec not in all_decades:
@@ -207,13 +207,17 @@ for dec in all_decades:
 
 decade_pills_html += (
     f'<button class="decade-pill active" id="avg-pill" '
-    f'data-color="{AVG_PILL}">Average &plusmn;1&sigma;</button>'
+    f'data-color="{AVG_PILL}">Average + IQR</button>'
 )
 
-select_options = "\n".join(
-    f'      <option value="{col}">{label}</option>'
-    for col, (label, _, _) in PRODUCTS.items()
-)
+product_pills_html = ""
+for col, (label, _, _) in PRODUCTS.items():
+    on = " on" if col == "crude_oil" else ""
+    pressed = "true" if col == "crude_oil" else "false"
+    product_pills_html += (
+        f'<button class="product-pill{on}" data-product="{col}" '
+        f'aria-pressed="{pressed}">{label}</button>'
+    )
 
 
 # ── Output files ───────────────────────────────────────────────────────────────
@@ -406,7 +410,7 @@ speedBtns.forEach(([b, sp]) => b.addEventListener('click', () => setAnimSpeed(sp
 
 def render_html(animation):
     title_suffix    = " (Animated)" if animation else ""
-    ctrl_cols       = "auto 1fr auto" if animation else "auto 1fr"
+    ctrl_cols       = "1fr auto" if animation else "1fr"
     replay_controls = REPLAY_CONTROLS_HTML if animation else ""
     banner_css      = BANNER_CSS if animation else ""
     chart_block     = CHART_BLOCK_ANIM if animation else '<div id="chart"></div>'
@@ -447,18 +451,26 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
   background:var(--bg-secondary);border-radius:10px;
   align-items:end;
 }}
+.ctrls-bottom{{grid-template-columns:1fr;margin-top:12px;margin-bottom:0;
+  background:transparent;padding:0;border-radius:0;}}
 .ctrl-grp{{display:flex;flex-direction:column;gap:5px;}}
 .ctrl-grp label{{
   font-size:11px;color:var(--text-secondary);
   text-transform:uppercase;letter-spacing:0.04em;font-weight:600;
 }}
-.ctrl-grp select{{
-  font-size:14px;padding:8px 32px 8px 11px;
-  background:var(--bg-primary);color:var(--text-primary);
-  border:0.5px solid var(--border);border-radius:7px;font-family:inherit;cursor:pointer;
-  -webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M0 0l5 6 5-6z' fill='%23555'/></svg>");
-  background-repeat:no-repeat;background-position:right 12px center;min-height:38px;
+.product-pills{{display:flex;gap:5px;flex-wrap:wrap;}}
+.product-pill{{
+  padding:8px 14px;font-size:13px;
+  background:var(--bg-primary);color:var(--text-secondary);
+  border:0.5px solid var(--border);border-radius:7px;
+  cursor:pointer;font-family:inherit;
+  transition:background 0.12s,color 0.12s,border-color 0.12s;
+  min-height:38px;white-space:nowrap;
+}}
+.product-pill:hover{{border-color:var(--border-strong);}}
+.product-pill.on{{
+  background:var(--text-primary);color:var(--bg-primary);
+  border-color:var(--text-primary);
 }}
 .decade-pills{{display:flex;gap:5px;flex-wrap:wrap;}}
 .decade-pill{{
@@ -513,15 +525,9 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 
 <div class="ctrls">
   <div class="ctrl-grp">
-    <label for="product-sel">Product</label>
-    <select id="product-sel">
-{select_options}
-    </select>
-  </div>
-  <div class="ctrl-grp">
-    <label>Decades</label>
-    <div class="decade-pills" id="decade-pills">
-      {decade_pills_html}
+    <label>Product</label>
+    <div class="product-pills" id="product-pills" role="group" aria-label="Product">
+      {product_pills_html}
     </div>
   </div>
 {replay_controls}</div>
@@ -531,6 +537,15 @@ body{{font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif
 </div>
 
 {chart_block}
+
+<div class="ctrls ctrls-bottom">
+  <div class="ctrl-grp">
+    <label>Decades</label>
+    <div class="decade-pills" id="decade-pills">
+      {decade_pills_html}
+    </div>
+  </div>
+</div>
 
 <div class="notes">
   <strong>Source:</strong> <span id="source-note">{source_notes['crude_oil']}</span>
@@ -574,6 +589,13 @@ const selectedDecades = new Set({json.dumps(all_decades)});
 const ALL_DECADE_COUNT = {len(all_decades)};
 let showAverage = true;
 
+function quantile(sorted, p) {{
+  const n = sorted.length;
+  if (!n) return null;
+  const pos = (n-1)*p, lo = Math.floor(pos), frac = pos - lo;
+  return lo + 1 < n ? sorted[lo] + (sorted[lo+1]-sorted[lo])*frac : sorted[lo];
+}}
+
 function computeAvgStats(product) {{
   const perWeekVals = {{}};                 // week -> [one value per contributing year]
   CHART_DATA[product].forEach(s => {{
@@ -609,11 +631,15 @@ function computeAvgStats(product) {{
     const m = vals.reduce((a, v) => a + v, 0) / vals.length;
     mean.push(m);
     if (vals.length < 2) {{ lower.push(null); upper.push(null); return; }}  // no band without 2+ years
-    const sd = Math.sqrt(vals.reduce((a, v) => a + (v - m) * (v - m), 0) / (vals.length - 1));  // sample std
-    lower.push(m - sd); upper.push(m + sd);
+    const sorted = vals.slice().sort((a, b) => a - b);
+    lower.push(quantile(sorted, 0.25)); upper.push(quantile(sorted, 0.75));
   }});
   return {{ weeks, mean, lower, upper }};
 }}
+
+// The axis is plotted in million barrels; the payload and tooltips stay in
+// thousand barrels (the EIA series unit). Nulls (band gaps) must survive.
+const toM = v => v == null ? null : v / 1000;
 
 // Year traces in chronological order (prior years, then the current year).
 function buildYearTraces(product) {{
@@ -634,19 +660,19 @@ function buildYearTraces(product) {{
     const grp  = decadeGroups[s.decade];
     const frac = grp.indexOf(s.year) / Math.max(grp.length - 1, 1);
     priorTraces.push({{
-      x: s.x, y: s.y, type: 'scatter', mode: 'lines',
+      x: s.x, y: s.y.map(toM), customdata: s.y, type: 'scatter', mode: 'lines',
       line: {{ color: decadeRgba(s.decade, frac), width: 1 }},
       meta: {{ year: s.year, decade: s.decade }},
-      hovertemplate: `Year: ${{s.year}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
+      hovertemplate: `Year: ${{s.year}}<br>Week: %{{x}}<br>%{{customdata:,.0f}} thousand barrels<extra></extra>`,
     }});
   }});
 
   const cur = series.find(s => s.year === CURRENT_YEAR);
   const curTrace = cur ? {{
-    x: cur.x, y: cur.y, type: 'scatter', mode: 'lines',
+    x: cur.x, y: cur.y.map(toM), customdata: cur.y, type: 'scatter', mode: 'lines',
     line: {{ color: '#c0392b', width: 2.8 }},
     meta: {{ year: CURRENT_YEAR, decade: (CURRENT_YEAR / 10 | 0) * 10 }},
-    hovertemplate: `Year: ${{CURRENT_YEAR}}<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>`,
+    hovertemplate: `Year: ${{CURRENT_YEAR}}<br>Week: %{{x}}<br>%{{customdata:,.0f}} thousand barrels<extra></extra>`,
   }} : null;
 
   return {{ priorTraces, curTrace }};
@@ -657,17 +683,17 @@ function buildTraces(product) {{
   const traces = [];
 
   const stats = showAverage ? computeAvgStats(product) : null;
-  // A std dev from one or two decades (~10-30 years) mostly reflects that
+  // A band from one or two decades (~10-30 years) mostly reflects that
   // era's trend, not seasonal spread — only band the full history.
   const showBand = stats && selectedDecades.size === ALL_DECADE_COUNT;
 
   if (showBand) {{
     traces.push({{
-      x: stats.weeks, y: stats.lower, type: 'scatter', mode: 'lines',
+      x: stats.weeks, y: stats.lower.map(toM), type: 'scatter', mode: 'lines',
       line: {{ width: 0 }}, hoverinfo: 'skip', connectgaps: false,
     }});
     traces.push({{
-      x: stats.weeks, y: stats.upper, type: 'scatter', mode: 'lines',
+      x: stats.weeks, y: stats.upper.map(toM), type: 'scatter', mode: 'lines',
       line: {{ width: 0 }}, fill: 'tonexty', fillcolor: AVG_BAND_COLOR,
       hoverinfo: 'skip', connectgaps: false,
     }});
@@ -677,9 +703,10 @@ function buildTraces(product) {{
 
   if (stats) {{
     traces.push({{
-      x: stats.weeks, y: stats.mean, type: 'scatter', mode: 'lines',
+      x: stats.weeks, y: stats.mean.map(toM), customdata: stats.mean,
+      type: 'scatter', mode: 'lines',
       line: {{ color: AVG_LINE_COLOR, width: 3, dash: 'dash' }},
-      hovertemplate: 'Average (selected decades)<br>Week: %{{x}}<br>%{{y:,.0f}} thousand barrels<extra></extra>',
+      hovertemplate: 'Average (selected decades)<br>Week: %{{x}}<br>%{{customdata:,.0f}} thousand barrels<extra></extra>',
     }});
   }}
 
@@ -715,7 +742,8 @@ function layoutFor(tier) {{
       range:[0.5,52.5], gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
     }},
     yaxis:{{
-      title:{{text:'<b>Thousand barrels</b>', font:{{size:c.titleSize}}}},
+      title:{{text:'<b>Million barrels</b>', font:{{size:c.titleSize}}}},
+      tickformat:',', separatethousands:true,
       gridcolor:'rgba(210,215,225,0.7)', showgrid:true, zeroline:false,
     }},
     showlegend: false,
@@ -725,11 +753,7 @@ function layoutFor(tier) {{
     // state (ranges autorange fresh); same-product redraws preserve zoom.
     uirevision: 'seasonality-' + currentProduct,
   }};
-  if (tier === 'lg') {{
-    layout.yaxis.tickformat = ',';
-    layout.yaxis.separatethousands = true;
-  }} else {{
-    layout.yaxis.tickformat = '~s';   // "1.5M" — full values remain in the hover text
+  if (tier !== 'lg') {{
     layout.yaxis.automargin = true;
     layout.dragmode = false;          // don't trap page scroll on touch screens
   }}
@@ -754,11 +778,11 @@ function syncLegend() {{
   if (avgItem) {{
     avgItem.style.opacity = (showAverage && selectedDecades.size) ? '1' : '0.25';
     avgItem.querySelector('.leg-label').textContent =
-      bandOn ? 'Average ±1σ (all decades)' : 'Average (selected decades)';
+      bandOn ? 'Average + IQR (all decades)' : 'Average (selected decades)';
     avgItem.querySelector('.leg-band').style.backgroundColor = bandOn ? '' : 'transparent';
   }}
   const avgPillEl = document.getElementById('avg-pill');
-  if (avgPillEl) avgPillEl.textContent = bandOn ? 'Average ±1σ' : 'Average';
+  if (avgPillEl) avgPillEl.textContent = bandOn ? 'Average + IQR' : 'Average';
 }}
 
 document.querySelectorAll('.decade-pill[data-decade]').forEach(pill => {{
@@ -814,13 +838,25 @@ window.addEventListener('resize', () => {{
   }}, 150);
 }});
 
-document.getElementById('product-sel').addEventListener('change', function() {{
-  currentProduct = this.value;
-  {redraw_call}
-  document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
-  const inote = INTERP_NOTES[currentProduct];
-  document.getElementById('interp-note-row').hidden = !inote;
-  document.getElementById('interp-note').textContent = inote;
+function syncProductPills() {{
+  document.querySelectorAll('.product-pill').forEach(pill => {{
+    const on = pill.dataset.product === currentProduct;
+    pill.classList.toggle('on', on);
+    pill.setAttribute('aria-pressed', on);
+  }});
+}}
+
+document.querySelectorAll('.product-pill').forEach(pill => {{
+  pill.addEventListener('click', () => {{
+    if (pill.dataset.product === currentProduct) return;
+    currentProduct = pill.dataset.product;
+    syncProductPills();
+    {redraw_call}
+    document.getElementById('source-note').textContent = SOURCE_NOTES[currentProduct];
+    const inote = INTERP_NOTES[currentProduct];
+    document.getElementById('interp-note-row').hidden = !inote;
+    document.getElementById('interp-note').textContent = inote;
+  }});
 }});
 </script>
 </body>
