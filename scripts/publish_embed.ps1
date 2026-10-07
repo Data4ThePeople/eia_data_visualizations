@@ -1,7 +1,7 @@
 # Publishes petroleum_seasonality_v2_viz.html to the Data4ThePeople/embeds repo.
-# Usage:
-#   .\publish_embed.ps1
-#   .\publish_embed.ps1 -Message "week 29, data up to 7/17/26"
+# Usage (from the repo root):
+#   .\scripts\publish_embed.ps1
+#   .\scripts\publish_embed.ps1 -Message "week 29, data up to 7/17/26"
 
 param(
     [string]$Message

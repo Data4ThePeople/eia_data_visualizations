@@ -21,6 +21,7 @@ import base64
 import json
 import mimetypes
 import os
+import time
 
 import pandas as pd
 import requests
@@ -30,6 +31,31 @@ load_dotenv()
 EIA_API_KEY = os.environ["EIA_API_KEY"]
 
 _EIA_API_URL = "https://api.eia.gov/v2/petroleum/stoc/wstk/data/"
+
+# The EIA API intermittently stalls (especially around weekly report releases),
+# so retry timeouts / connection drops / 5xx with a short growing pause.
+_MAX_TRIES = 4
+_RETRY_WAIT = 10  # seconds, multiplied by the attempt number
+
+
+def _get_with_retries(params, series_id):
+    for attempt in range(1, _MAX_TRIES + 1):
+        try:
+            resp = requests.get(_EIA_API_URL, params=params, timeout=60)
+            resp.raise_for_status()
+            return resp
+        except (requests.Timeout, requests.ConnectionError, requests.HTTPError) as e:
+            retryable = not isinstance(e, requests.HTTPError) or (
+                e.response is not None and e.response.status_code >= 500
+            )
+            if not retryable or attempt == _MAX_TRIES:
+                raise
+            wait = _RETRY_WAIT * attempt
+            print(
+                f"{series_id}: {type(e).__name__}, retrying in {wait}s "
+                f"(attempt {attempt}/{_MAX_TRIES})"
+            )
+            time.sleep(wait)
 
 
 def fetch_eia(series_id, col_name):
@@ -42,8 +68,7 @@ def fetch_eia(series_id, col_name):
         "sort[0][direction]": "asc",
         "length": 5000,
     }
-    resp = requests.get(_EIA_API_URL, params=params, timeout=30)
-    resp.raise_for_status()
+    resp = _get_with_retries(params, series_id)
     records = resp.json()["response"]["data"]
     df = (
         pd.DataFrame(records)[["period", "value"]]

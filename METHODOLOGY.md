@@ -112,7 +112,7 @@ Per-product animated GIF exports of this play-through are also produced for embe
 
 ## Updating
 
-We refresh the charts weekly. The process is mechanical: run the build scripts — they pull the latest data from the EIA API — and republish the output. One script builds the seasonality chart and the replay animation page together; a second builds the dot strip. The current-year highlight, week ranges, and all statistics update automatically; no manual editing is required.
+We refresh the charts weekly, and the refresh is automated. A scheduled job runs each Wednesday afternoon — after the EIA's weekly release that morning — rebuilds all three views from the live API, and publishes the output only when the data has actually advanced to a new week; each update's commit message records the data week it reflects. If the EIA delays a release (typically after a federal holiday), a Thursday fallback run picks it up, and a run that finds no new data changes nothing. One script builds the seasonality chart and the replay animation page together; a second builds the dot strip. The current-year highlight, week ranges, and all statistics update automatically; no manual editing is required.
 
 ## Honest notes and limitations
 

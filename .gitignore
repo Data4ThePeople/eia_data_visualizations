@@ -1,3 +1,5 @@
 .env
 .idea/
 .venv/
+.claude/
+weekly_update.log
