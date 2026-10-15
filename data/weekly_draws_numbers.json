@@ -1,0 +1,54 @@
+{
+ "latest_week": "2026-10-09",
+ "total_change": -8557.0,
+ "total_level": 698560.0,
+ "commercial_change": -8557.0,
+ "commercial_level": 415577.0,
+ "spr_change": 0.0,
+ "spr_level": 282983.0,
+ "distillate_change": -2527.0,
+ "distillate_level": 102611.0,
+ "commercial_minus_spr_check": 0.0,
+ "total_rank_since_war": 11,
+ "commercial_rank_since_war": 1,
+ "war_weeks": 32,
+ "largest_total_draw_week": "2026-05-15",
+ "largest_total_draw": -17783.0,
+ "largest_total_draw_split": {
+  "commercial": -7863.0,
+  "spr": -9920.0
+ },
+ "last_larger_total_draw": [
+  "2026-07-24",
+  -10964.0
+ ],
+ "last_larger_commercial_draw": [
+  "2026-02-13",
+  -9014.0
+ ],
+ "war_weeks_spr_unchanged": [
+  "2026-03-13",
+  "2026-03-20",
+  "2026-10-09"
+ ],
+ "spr_first_draw_week": "2026-03-27",
+ "cum_change_since_war": {
+  "total": -156160.0,
+  "commercial": -23702.0,
+  "spr": -132458.0
+ },
+ "distillate_same_week_rank_low": 1,
+ "distillate_same_week_years": 45,
+ "distillate_same_week_next_lowest": [
+  2022,
+  106063.0
+ ],
+ "distillate_5yr_avg": 116867.4,
+ "distillate_vs_5yr_pct": -12.198782551849352,
+ "distillate_change_pct": -2.403507770739409,
+ "distillate_rank_draw_since_war": 7,
+ "distillate_last_lower": [
+  "2026-06-05",
+  102101.0
+ ]
+}
