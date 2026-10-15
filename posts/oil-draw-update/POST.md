@@ -37,6 +37,11 @@ What stands out is that the SPR did not change at all. Last week was the first w
 
 Diesel stocks fell 2.5 million barrels last week, a drop of 2.4%, to 102.6 million barrels. (EIA counts diesel and heating oil together as distillate fuel oil.) That is the lowest level for this week of the year in EIA's weekly data, which goes back to 1982. The next lowest was 106.1 million barrels in 2022. Stocks are 12.2% below the average for the same week from 2021 to 2025.
 
+The animation below draws every year of diesel stocks since 1982, then slows down to add 2026 one week at a time.
+
+![Animated line chart titled U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality. It shows diesel stocks in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It drops below the gray band in late May, stays below it, and ends at 102.6 million barrels in week 41, below every past year at that point.](images/02-diesel-seasonality.gif)
+*Diesel and heating oil stocks by week of the year, 1982 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WDISTUS1.*
+
 In August, we wrote that [we may be running out of the fuel that runs our economy](https://www.data4thepeople.com/p/running-out-of-diesel). Diesel stocks are lower now than they were then.
 
 ## Our coverage of the 2026 energy crisis
