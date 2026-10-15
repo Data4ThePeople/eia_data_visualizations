@@ -70,11 +70,14 @@ def numbers(w):
     n["last_larger_total_draw"] = [str(prev.index[-1].date()), prev.iloc[-1]]
     prevc = d.commercial[(d.commercial <= d.commercial.iloc[-1]) & (d.index < last)]
     n["last_larger_commercial_draw"] = [str(prevc.index[-1].date()), prevc.iloc[-1]]
+    n["largest_total_draw_spr_share_pct"] = 100 * war.spr[big] / war.total[big]
     nz = war.spr[(war.spr == 0)]
     n["war_weeks_spr_unchanged"] = [str(x.date()) for x in nz.index]
     spr_draws = war.spr[war.spr < 0]
     n["spr_first_draw_week"] = str(spr_draws.index[0].date())
     n["cum_change_since_war"] = {c: w[c].iloc[-1] - w[c][w.index <= WAR_START].iloc[-1] for c in ["total", "commercial", "spr"]}
+    n["cum_spr_share_pct"] = 100 * n["cum_change_since_war"]["spr"] / n["cum_change_since_war"]["total"]
+    n["distillate_at_aug23_post"] = [str(w.distillate.loc[:"2026-08-19"].index[-1].date()), w.distillate.loc[:"2026-08-19"].iloc[-1]]  # latest week published before the Aug 23 diesel post
     # diesel: same week of year, nearest date to the latest week in every year
     doy = last.dayofyear
     same = w.distillate.groupby(w.index.year).apply(lambda s: s.iloc[(s.index.dayofyear - doy).to_series().abs().argmin()]

@@ -26,6 +26,7 @@
   "2026-02-13",
   -9014.0
  ],
+ "largest_total_draw_spr_share_pct": 55.783613563515715,
  "war_weeks_spr_unchanged": [
   "2026-03-13",
   "2026-03-20",
@@ -37,6 +38,11 @@
   "commercial": -23702.0,
   "spr": -132458.0
  },
+ "cum_spr_share_pct": 84.8219774590164,
+ "distillate_at_aug23_post": [
+  "2026-08-14",
+  105619.0
+ ],
  "distillate_same_week_rank_low": 1,
  "distillate_same_week_years": 45,
  "distillate_same_week_next_lowest": [

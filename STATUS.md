@@ -5,15 +5,15 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 
 ## Current
 
-Post: oil-draw-update (working slug, Eric to confirm at 2a)
-Step: 1
+Post: oil-draw-update
+Step: 2a
 Since: 2026-10-15
 
 ## Steps
 
 | Step | What | Confirmed | Notes |
 |---|---|---|---|
-| 1  | Exploration and analysis | | |
+| 1  | Exploration and analysis | 2026-10-15 | Own and independent tie-outs pass |
 | 2a | Draft with brackets resolved | | |
 | 2b | Eric's edit, Claude's look-over | | |
 | 2c | Slice markup | | |
@@ -32,3 +32,4 @@ None.
 - 2026-10-15 Eric's claim checked: this week's total crude draw (8.56 million barrels) is not the largest since the war; it is 11th of 32 war weeks, largest total draw since July 24. It is the largest commercial crude draw since the war began (largest since February 13, before the war). SPR unchanged this week. War start February 28, 2026, as in SPR_explainer and Sulfur. Eric: the SPR pause is explained in the SPR_explainer project, and the reserve will likely draw again after the round 4 bid round completes.
 - 2026-10-15 Built scripts/weekly_draws.py (EIA API, live) -> data/weekly_draws.csv, data/weekly_draws_numbers.json, posts/oil-draw-update/images/01-weekly-crude-draws.png. House style copied from Sulfur (scripts/plot_style.py).
 - 2026-10-15 Own tie-out passes. Independent tie-out (fresh agent, own API pull plus EIA history spreadsheets, 2,298 weeks per series, zero differences): every number and every bar on the chart matched. Applied its points: x-axis months in AP style; DATASETS.md wording on the total identity (holds every week since 1982), revisions, the +1 SPR quirk, and the 1982-83 gaps. Could not check: whether weekly values are ever revised (no vintage history).
+- 2026-10-15 Eric sent nine earlier energy-crisis links and confirmed Step 1 and the slug oil-draw-update. Step 2a opened. At Eric's instruction ("yes go ahead and draft it") Claude wrote the whole draft: crude update with the chart, diesel update, a reference list of the nine posts, a bracket for Eric's closing, and About the data. Publish date set to October 16 for Eric to confirm. Share figures (56% of the May 15 draw, 85% of the drop since the war from the SPR) and the diesel level at the August 23 post added to scripts/weekly_draws.py.
