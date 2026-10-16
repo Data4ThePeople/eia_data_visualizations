@@ -18,9 +18,9 @@ dividers: false
 
 # Oil Update: The Biggest Commercial Crude Draw of the War
 
-Yesterday, The Energy Information Administration (EIA) released its weekly oil inventory report - a day later than usual because of the Columbus Day holiday. It covers the week ending October 9. 
+Yesterday, the Energy Information Administration (EIA) released its weekly oil inventory report, a day later than usual because of the Columbus Day holiday. It covers the week ending October 9. 
 
-The report showed the largest commercial crude oil draw since before the war started. We figured we should flag this for you, not because anything can be done about it at this stage, but because it's a good chance to understand how we let this happen. To assist you with that, we've included links to a selection of our writing on oil markets over the past month. We do this not to take a victory lap. There are no winners with what is going on here. It's to illustrate how valuable it is to have a basic level of education on things like how a refinery works. I constantly wonder: if we all knew how a refinery worked back in March, would we have done something differently to avoid this fate? I'll never know the answer, but if [D4TP's vision](https://www.data4thepeople.com/p/welcome-to-data4thepeople) plays out, there will be a day when we all see to the raging tempest of noise to a shared truth.
+The report showed the largest commercial crude oil draw since before the war started. We figured we should flag this for you, not because anything can be done about it at this stage, but because it's a good chance to understand how we let this happen. To assist you with that, we've included links to a selection of our writing on oil markets over the past few months. We do this not to take a victory lap. There are no winners with what is going on here. It's to illustrate how valuable it is to have a basic level of education on things like how a refinery works. I constantly wonder: if we had all known how a refinery worked back in March, would we have done something differently to avoid this fate? I'll never know the answer, but if [D4TP's vision](https://www.data4thepeople.com/p/welcome-to-data4thepeople) plays out, there will be a day when we all see through the raging tempest of noise to a shared truth.
 
 That said, here's the update on yesterday's data.
 
@@ -59,7 +59,7 @@ The same animation for gasoline shows 2026 starting the year well above past yea
 
 ## Our coverage of the 2026 energy crisis
 
-Since June, we have followed the war's effects on oil, fuel and the things made from them. Here are a selection of those pieces in one place, oldest first.
+Since June, we have followed the war's effects on oil, fuel and the things made from them. Here is a selection of those pieces in one place, oldest first.
 
 - [Even if oil falls, your gas might not. Here's why.](https://www.data4thepeople.com/p/even-if-oil-falls-your-gas-might-not) (June 3, 2026): why pump prices can stay high when crude falls, by looking at the refining margin.
 - [Accountability is Patriotism: Uncle Sam's Magic Oil Disappearing Act](https://www.data4thepeople.com/p/oil-circus) (July 3, 2026): U.S. crude stocks falling toward 40-year lows while crude exports continue.
