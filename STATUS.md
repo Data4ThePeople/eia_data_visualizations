@@ -46,3 +46,4 @@ None.
 - 2026-10-16 2e: meta_title 57, description 150, 7 keywords; schema Article, section Data 4 Thought. Common questions section proposed to Eric, not applied.
 - 2026-10-16 Eric accepted the Common questions section and confirmed 2e. Step 2f opened.
 - 2026-10-16 2f: dry run clean (46 blocks, 29 slices, 3 images + hero, FAQPage with 4 questions), then pushed. Prismic draft atH3hRIAACoAnOPg, uid oil-draw-update, in the Migration Release; tags and author empty. No read token, so the push could not be verified from this side.
+- 2026-10-16 After the push, Eric replaced the diesel follow-up sentence (heading into winter, heating oil). Same structure (46 blocks, 29 slices); 2b-2f re-run in place and the same Prismic draft updated.

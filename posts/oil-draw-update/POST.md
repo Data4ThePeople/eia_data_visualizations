@@ -46,7 +46,7 @@ The animation below draws every year of diesel stocks since 1982, then slows dow
 ![Animated line chart titled U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality. It shows diesel stocks in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It drops below the gray band in late May, stays below it, and ends at 102.6 million barrels in week 41, below every past year at that point.](images/02-diesel-seasonality.gif)
 *Diesel and heating oil stocks by week of the year, 1982 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WDISTUS1.*
 
-In August, we wrote that [we may be running out of the fuel that runs our economy](https://www.data4thepeople.com/p/running-out-of-diesel). Diesel stocks are lower now than they were then.
+In August, we wrote that [we may be running out of the fuel that runs our economy](https://www.data4thepeople.com/p/running-out-of-diesel). Diesel stocks are lower now than they were then, and we are now heading into the winter, which increases the demand for heating oil, a close cousin to diesel.
 
 ## Gasoline: back in the normal range
 
