@@ -5,7 +5,7 @@ slug: oil-draw-update
 date: 2026-10-16
 section: Data 4 Thought
 hero: images/oil-draw-update-hero-1680x1080.png
-hero_alt: Bar chart titled Weekly change in U.S. crude oil stocks since the war began, weeks ending March 6 to October 9, 2026, in million barrels. Each weekly bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June, led by a 17.8 million barrel drop in the week ending May 15. The last bar, October 9, is an 8.6 million barrel drop, all commercial.
+hero_alt: Headline in blue reads 8.6 million barrels, of commercial crude drawn in one week, the most since the war began, under a small label reading Oil Update. Below it, a bar chart of weekly changes in U.S. crude oil stocks since March, split into commercial stocks in blue and the Strategic Petroleum Reserve in gold. Earlier weeks are dimmed, with deep gold draws in May and June. The last bar, October 9, is bright blue and outlined.
 meta_title:
 description:
 keywords:
@@ -30,7 +30,7 @@ U.S. crude oil stocks fell 8.6 million barrels last week. That figure combines t
 
 It was not the largest drop in total crude, though. The chart below shows the weekly change in both parts since the war began.
 
-![Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is a blue-only draw of 8.6 million barrels.](images/01-weekly-crude-draws.png)
+![Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is outlined: a blue-only draw of 8.6 million barrels.](images/01-weekly-crude-draws.png)
 *Weekly change in U.S. crude oil stocks, commercial and Strategic Petroleum Reserve, weeks ending March 6 to October 9, 2026. Source: EIA Weekly Petroleum Status Report.*
 
 The biggest weeks came in May and June, when the SPR was releasing the most oil. The largest was the week ending May 15, when total stocks fell 17.8 million barrels, and 56% of that came from the reserve. Last week ranks 11th of the 32 weeks since the war began. It was the largest total drop since the week ending July 24.

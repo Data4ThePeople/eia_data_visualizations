@@ -133,8 +133,12 @@ def chart(d, n, out=OUT_PNG, size=(11, 6.6)):
                 (big, n["largest_total_draw"] / 1000), xytext=(-16, 0), textcoords="offset points",
                 ha="right", va="center", color=INK_DIM, fontsize=9.5, linespacing=1.3)
     last = x[-1]
+    # call out the latest week: an outline around its bar
+    ax.add_patch(plt.Rectangle((last - pd.Timedelta(days=4.6), n["total_change"] / 1000 - 0.9), pd.Timedelta(days=9.2),
+                               -n["total_change"] / 1000 + 1.8, fill=False, edgecolor=INK, lw=1.6,
+                               joinstyle="round", zorder=5))
     ax.annotate(f'Oct. 9: {-n["total_change"]/1000:.1f} million,\nall commercial',
-                (last, n["total_change"] / 1000), xytext=(-16, -4), textcoords="offset points",
+                (last, n["total_change"] / 1000), xytext=(-22, -4), textcoords="offset points",
                 ha="right", va="top", color=INK, fontsize=10, fontweight="bold", linespacing=1.3)
     ax.set_ylim(min(-21, war.total.min() - 4), max(war[["commercial"]].max().max(), 8) + 3)
     titleblock(fig, "Weekly change in U.S. crude oil stocks since the war began",
@@ -157,6 +161,4 @@ if __name__ == "__main__":
     pd.concat([w, d.add_suffix("_chg")], axis=1).loc["2025-12-01":].to_csv("data/weekly_draws.csv", float_format="%.0f")
     json.dump(n, open("data/weekly_draws_numbers.json", "w"), indent=1, default=float)
     chart(d, n)
-    # hero source: same chart on a smaller canvas so type stays legible once padded to 1680x1080
-    chart(d, n, out="posts/oil-draw-update/images/oil-draw-update-hero-source.png", size=(9.4, 6.0))
     print(json.dumps(n, indent=1, default=float))
