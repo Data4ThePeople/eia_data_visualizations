@@ -78,3 +78,21 @@ You can follow U.S. oil and fuel stocks each week in our [free petroleum invento
 ## About the data
 
 All figures come from EIA's Weekly Petroleum Status Report: commercial crude oil (series WCESTUS1), crude oil in the SPR (WCSSTUS1), total crude oil including the SPR (WCRSTUS1), distillate fuel oil (WDISTUS1) and total gasoline (WGTSTUS1). Weekly commercial figures are estimates from a survey of companies, so any one week's change can be off, and EIA's monthly data later replaces them. The SPR figure is a count from the Department of Energy. "Since the war began" means the 32 weeks ending March 6 through October 9, 2026. For diesel and gasoline, "this week of the year" compares the week ending October 9 with the week closest to the same date in every earlier year, since 1982 for diesel and 1990 for gasoline.
+
+## Common questions
+
+### How much crude oil did U.S. stocks fall in the week ending October 9, 2026?
+
+Total crude oil stocks fell 8.6 million barrels, all from commercial stocks. It was the largest weekly drop in commercial crude since the war began on February 28, 2026.
+
+### Why didn't the Strategic Petroleum Reserve change that week?
+
+The government has been lending reserve oil to companies in rounds. In our view, the reserve will likely start to draw again once the current round of loans is awarded.
+
+### Are U.S. diesel stocks low right now?
+
+Yes. At 102.6 million barrels, diesel stocks were the lowest for this week of the year in EIA's weekly data going back to 1982, and 12.2% below the 2021 to 2025 average.
+
+### How much crude oil has the U.S. drawn since the war began?
+
+Total crude stocks fell 156.2 million barrels from February 28 to October 9, 2026. About 85% of that came from the Strategic Petroleum Reserve.

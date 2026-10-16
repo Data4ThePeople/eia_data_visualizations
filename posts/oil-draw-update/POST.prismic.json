@@ -3,6 +3,9 @@
   "page_subtitle": "U.S. crude stocks fell 8.6 million barrels last week, all of it from commercial tanks. Diesel stocks are the lowest for this time of year since 1982.",
   "published_date": "2026-10-16",
   "updated_date": "2026-10-16",
+  "meta_title": "Oil Inventories: Biggest Commercial Crude Draw of the War",
+  "meta_description": "EIA data for the week ending October 9, 2026: the largest commercial crude draw since the war began, and diesel stocks at a low for this time of year.",
+  "meta_keywords": "EIA weekly petroleum status report, U.S. crude oil inventories, commercial crude oil draw, diesel inventories 2026, Strategic Petroleum Reserve drawdown, gasoline inventories, 2026 energy crisis",
   "make_this_main_post": false,
   "slices": [
     {
@@ -103,7 +106,7 @@
       "items": [],
       "primary": {
         "image": {
-          "alt": "Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is a blue-only draw of 8.6 million barrels.",
+          "alt": "Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is outlined: a blue-only draw of 8.6 million barrels.",
           "copyright": null
         },
         "source_text": [
@@ -569,7 +572,166 @@
           }
         ]
       }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Common questions",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "How much crude oil did U.S. stocks fall in the week ending October 9, 2026?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Total crude oil stocks fell 8.6 million barrels, all from commercial stocks. It was the largest weekly drop in commercial crude since the war began on February 28, 2026.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "Why didn't the Strategic Petroleum Reserve change that week?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "The government has been lending reserve oil to companies in rounds. In our view, the reserve will likely start to draw again once the current round of loans is awarded.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "Are U.S. diesel stocks low right now?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Yes. At 102.6 million barrels, diesel stocks were the lowest for this week of the year in EIA's weekly data going back to 1982, and 12.2% below the 2021 to 2025 average.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "How much crude oil has the U.S. drawn since the war began?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Total crude stocks fell 156.2 million barrels from February 28 to October 9, 2026. About 85% of that came from the Strategic Petroleum Reserve.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
     }
   ],
-  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Oil Update: The Biggest Commercial Crude Draw of the War\",\n  \"description\": \"\",\n  \"datePublished\": \"2026-10-16T07:00:00-04:00\",\n  \"dateModified\": \"2026-10-16T07:00:00-04:00\",\n  \"articleSection\": \"Data 4 Thought\",\n  \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n  \"inLanguage\": \"en-US\",\n  \"isAccessibleForFree\": true,\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Eric Pachman\",\n    \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Data 4 The People\",\n    \"url\": \"https://data4thepeople.com\"\n  },\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://www.data4thepeople.com/p/oil-draw-update\"\n  }\n}"
+  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@graph\": [\n    {\n      \"@type\": \"Article\",\n      \"headline\": \"Oil Update: The Biggest Commercial Crude Draw of the War\",\n      \"description\": \"EIA data for the week ending October 9, 2026: the largest commercial crude draw since the war began, and diesel stocks at a low for this time of year.\",\n      \"datePublished\": \"2026-10-16T07:00:00-04:00\",\n      \"dateModified\": \"2026-10-16T07:00:00-04:00\",\n      \"articleSection\": \"Data 4 Thought\",\n      \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n      \"inLanguage\": \"en-US\",\n      \"isAccessibleForFree\": true,\n      \"keywords\": [\n        \"EIA weekly petroleum status report\",\n        \"U.S. crude oil inventories\",\n        \"commercial crude oil draw\",\n        \"diesel inventories 2026\",\n        \"Strategic Petroleum Reserve drawdown\",\n        \"gasoline inventories\",\n        \"2026 energy crisis\"\n      ],\n      \"author\": {\n        \"@type\": \"Person\",\n        \"name\": \"Eric Pachman\",\n        \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n      },\n      \"publisher\": {\n        \"@type\": \"Organization\",\n        \"name\": \"Data 4 The People\",\n        \"url\": \"https://data4thepeople.com\"\n      },\n      \"mainEntityOfPage\": {\n        \"@type\": \"WebPage\",\n        \"@id\": \"https://www.data4thepeople.com/p/oil-draw-update\"\n      },\n      \"@id\": \"https://www.data4thepeople.com/p/oil-draw-update#article\"\n    },\n    {\n      \"@type\": \"FAQPage\",\n      \"@id\": \"https://www.data4thepeople.com/p/oil-draw-update#faq\",\n      \"mainEntity\": [\n        {\n          \"@type\": \"Question\",\n          \"name\": \"How much crude oil did U.S. stocks fall in the week ending October 9, 2026?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"Total crude oil stocks fell 8.6 million barrels, all from commercial stocks. It was the largest weekly drop in commercial crude since the war began on February 28, 2026.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"Why didn't the Strategic Petroleum Reserve change that week?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"The government has been lending reserve oil to companies in rounds. In our view, the reserve will likely start to draw again once the current round of loans is awarded.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"Are U.S. diesel stocks low right now?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"Yes. At 102.6 million barrels, diesel stocks were the lowest for this week of the year in EIA's weekly data going back to 1982, and 12.2% below the 2021 to 2025 average.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"How much crude oil has the U.S. drawn since the war began?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"Total crude stocks fell 156.2 million barrels from February 28 to October 9, 2026. About 85% of that came from the Strategic Petroleum Reserve.\"\n          }\n        }\n      ]\n    }\n  ]\n}"
 }

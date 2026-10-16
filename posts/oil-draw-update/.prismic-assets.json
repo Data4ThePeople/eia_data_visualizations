@@ -1,0 +1,30 @@
+{
+  "images/01-weekly-crude-draws.png": {
+    "id": "oDEp5i-xJph_BbsU",
+    "width": 1760,
+    "height": 1056,
+    "url": "https://images.prismic.io/data4thepeople/oDEp5i-xJph_BbsU_01-weekly-crude-draws.png?auto=format,compress",
+    "stamp": "123436:1792145075"
+  },
+  "images/02-diesel-seasonality.gif": {
+    "id": "XsuMyYox9s88w47f",
+    "width": 1060,
+    "height": 650,
+    "url": "https://images.prismic.io/data4thepeople/XsuMyYox9s88w47f_02-diesel-seasonality.gif?auto=format,compress",
+    "stamp": "441318:1792097216"
+  },
+  "images/03-gasoline-seasonality.gif": {
+    "id": "DQa9WLun8RVKYstD",
+    "width": 1060,
+    "height": 650,
+    "url": "https://images.prismic.io/data4thepeople/DQa9WLun8RVKYstD_03-gasoline-seasonality.gif?auto=format,compress",
+    "stamp": "413967:1792144691"
+  },
+  "images/oil-draw-update-hero-1680x1080.png": {
+    "id": "MrGwV-zRd_iL9NmT",
+    "width": 1680,
+    "height": 1080,
+    "url": "https://images.prismic.io/data4thepeople/MrGwV-zRd_iL9NmT_oil-draw-update-hero-1680x1080.png?auto=format,compress",
+    "stamp": "56507:1792145110"
+  }
+}
