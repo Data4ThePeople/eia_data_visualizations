@@ -32,7 +32,7 @@ The report showed the largest commercial crude oil draw since before the war sta
 `images/email-crude-seasonality.png` (the petroleum inventory tool set to crude oil; not in the post, by Eric's choice)
 Alt:
 ```
-Line chart titled U.S. Crude Oil (incl. SPR): Weekly Seasonality. It shows U.S. crude oil stocks, including the Strategic Petroleum Reserve, in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line in bold red starts below the band, rises just into it from late February to mid-April, then falls to 698.6 million barrels in week 41, below every past year at that point except 1982.
+Line chart titled U.S. Crude Oil (incl. SPR): Weekly Seasonality. It shows U.S. crude oil stocks in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line in bold red starts below the band, rises just into it from late February to mid-April, then falls to 698.6 million barrels in week 41, below every past year at that point except 1982.
 ```
 
 ## 5. Body, part two
