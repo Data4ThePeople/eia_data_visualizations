@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: oil-draw-update
-Step: 2f
+Step: 2g
 Since: 2026-10-16
 
 ## Steps
@@ -19,7 +19,7 @@ Since: 2026-10-16
 | 2c | Slice markup | 2026-10-16 | No fences needed; 19 slices, 3 images, divider once |
 | 2d | Hero 1680x1080 + alt text | 2026-10-16 | Own render (scripts/hero.py), latest week outlined; alt 430 characters |
 | 2e | SEO | 2026-10-16 | Meta title 57, description 150, 7 keywords; Common questions, four entries |
-| 2f | Pushed to Prismic (draft) | | |
+| 2f | Pushed to Prismic (draft) | 2026-10-16 | Draft atH3hRIAACoAnOPg, Migration Release; updated once after Eric's diesel sentence |
 | 2g | Mailchimp teaser | | |
 
 ## Stale
@@ -47,3 +47,4 @@ None.
 - 2026-10-16 Eric accepted the Common questions section and confirmed 2e. Step 2f opened.
 - 2026-10-16 2f: dry run clean (46 blocks, 29 slices, 3 images + hero, FAQPage with 4 questions), then pushed. Prismic draft atH3hRIAACoAnOPg, uid oil-draw-update, in the Migration Release; tags and author empty. No read token, so the push could not be verified from this side.
 - 2026-10-16 After the push, Eric replaced the diesel follow-up sentence (heading into winter, heating oil). Same structure (46 blocks, 29 slices); 2b-2f re-run in place and the same Prismic draft updated.
+- 2026-10-16 Eric confirmed 2f. Step 2g opened: EMAIL.md drafted from the post text only; hero exported as images/oil-draw-update-hero-email.jpg (1680 wide, 63KB); email chart is images/01-weekly-crude-draws.png. Waiting for Eric to approve or reject.
