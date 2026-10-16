@@ -1,11 +1,11 @@
-"""Animated GIF of the distillate (diesel) seasonality chart for the oil-draw-update post.
+"""Animated GIFs of the diesel and gasoline seasonality charts for the oil-draw-update post.
 
 Same look as petroleum_seasonality_v2_viz.html: one line per year on a week 1-52 axis,
 prior years shaded by decade, 2026 in bold red, average and interquartile band of prior
 years. Prior years rush by, then 2026 draws in one week at a time, and the finished chart
 holds. The label on the 2026 line shows only real weekly values.
 
-    python scripts/animate_seasonality.py
+    python scripts/animate_seasonality.py [distillate|gasoline]
 """
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
@@ -19,8 +19,16 @@ from matplotlib.patches import Patch
 from PIL import Image
 from weekly_draws import fetch
 
-OUT = "posts/oil-draw-update/images/02-diesel-seasonality.gif"
-LAST_PNG = "posts/oil-draw-update/images/02-diesel-seasonality-final.png"
+PRODUCTS = {  # column, file stem, title, series id, series description
+    "distillate": ("02-diesel-seasonality", "U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality", "WDISTUS1",
+                   "distillate fuel oil"),
+    "gasoline": ("03-gasoline-seasonality", "U.S. Total Gasoline: Weekly Seasonality", "WGTSTUS1",
+                 "total motor gasoline"),
+}
+PRODUCT = sys.argv[1] if len(sys.argv) > 1 else "distillate"
+STEM, TITLE, SERIES_ID, SERIES_DESC = PRODUCTS[PRODUCT]
+OUT = f"posts/oil-draw-update/images/{STEM}.gif"
+LAST_PNG = f"posts/oil-draw-update/images/{STEM}-final.png"
 LOGO = os.path.expanduser("~/PycharmProjects/WarTaxViz/logos/d4tp-text-dark@2x.png")
 CUR_RED = "#c0392b"
 DECADES = {  # light (first year of decade) to dark (last), same values as the tool
@@ -68,7 +76,7 @@ def avg_band(ys, cur):
 
 def main():
     w = fetch()
-    ys = years(w["distillate"])
+    ys = years(w[PRODUCT])
     cur = max(ys)
     prior = [y for y in sorted(ys) if y < cur]
     by_dec = {}
@@ -77,7 +85,7 @@ def main():
     color = {y: shade(y // 10 * 10, g.index(y) / max(len(g) - 1, 1)) for g in by_dec.values() for y in g}
     aw, am, alo, ahi = avg_band(ys, cur)
     cw, cv = ys[cur]
-    last_date = w["distillate"].dropna().index[-1]
+    last_date = w[PRODUCT].dropna().index[-1]
 
     # schedule: (years fully drawn, partial year, fraction, 2026 weeks shown, show average)
     frames = []
@@ -129,20 +137,20 @@ def main():
         if banner_year:
             fig.text(0.975, 0.955, str(banner_year), ha="right", va="top",
                     color=banner_col, fontsize=34, fontweight="bold", alpha=0.9, zorder=9)
-        fig.text(0.025, 0.955, "U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality", color=INK, fontsize=17,
+        fig.text(0.025, 0.955, TITLE, color=INK, fontsize=17,
                  fontweight="bold", va="top")
         fig.text(0.025, 0.905, f"Ending stocks by week of year (1 to 52), one line per year, {prior[0]} to {cur}. "
                  f"{cur} in bold red.", color=INK2, fontsize=10.5, va="top")
         handles = [Line2D([], [], color=CUR_RED, lw=3, label=str(cur)),
                    (Patch(color=(0.5, 0.5, 0.5, 0.25)), Line2D([], [], color=INK, lw=2, ls=(0, (3, 2))))]
         labels = [str(cur), "Average + IQR (prior years)"]
-        for d in sorted(MID, reverse=True):
+        for d in sorted(by_dec, reverse=True):  # only decades with data
             handles.append(Line2D([], [], color=tuple(c / 255 for c in MID[d]), lw=1.6)); labels.append(f"{d}s")
         from matplotlib.legend_handler import HandlerTuple
         fig.legend(handles, labels, loc="upper left", bbox_to_anchor=(0.02, 0.875), ncol=7, frameon=False,
                    fontsize=10, labelcolor=INK2, handlelength=2.2, columnspacing=1.6,
                    handler_map={tuple: HandlerTuple(ndivide=1)})
-        fig.text(0.025, 0.03, f"Source: EIA series WDISTUS1, weekly U.S. ending stocks of distillate fuel oil, "
+        fig.text(0.025, 0.03, f"Source: EIA series {SERIES_ID}, weekly U.S. ending stocks of {SERIES_DESC}, "
                  f"thousand barrels (plotted in millions).\nData through the week ending "
                  f"{last_date:%B} {last_date.day}, {last_date.year}. Week = day of year / 7, capped at 52.",
                  color=INK2, fontsize=8.5, va="bottom")

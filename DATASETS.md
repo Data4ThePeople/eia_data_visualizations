@@ -3,7 +3,7 @@
 ## EIA Weekly Petroleum Status Report: weekly ending stocks
 
 - **What it is:** U.S. ending stocks at the end of each week (Friday), thousand barrels. EIA API v2, route `petroleum/stoc/wstk`, frequency weekly.
-- **Series used:** WCRSTUS1 crude oil including SPR; WCESTUS1 commercial crude oil (excluding SPR); WCSSTUS1 crude oil in the SPR; WDISTUS1 distillate fuel oil (diesel and heating oil).
+- **Series used:** WCRSTUS1 crude oil including SPR; WCESTUS1 commercial crude oil (excluding SPR); WCSSTUS1 crude oil in the SPR; WDISTUS1 distillate fuel oil (diesel and heating oil); WGTSTUS1 total motor gasoline (weekly from January 1990).
 - **Vintage:** pulled October 15, 2026; latest week ending October 9, 2026. The report came out Thursday, October 15, a day late because of the Columbus Day holiday.
 - **Coverage:** weekly from August 1982 for all four series.
 - **How the numbers are made:** commercial stocks are estimates from EIA's weekly sample of refiners, terminals, pipelines and tank farms; the SPR figure comes from the Department of Energy and is a direct count. WCRSTUS1 equals WCESTUS1 plus WCSSTUS1 as published, in every week since 1982 (checked by the independent tie-out, October 15, 2026).
@@ -14,6 +14,7 @@
   - "Since the war began" means weeks ending after February 28, 2026: March 6 through October 9, 32 weeks. The week ending March 6 covers February 28 to March 6.
   - Rank of a draw: 1 + the number of war weeks with a larger draw. Ties do not count as larger.
   - Diesel "same week of the year": for each year, the weekly value whose date is closest to the latest week's day of the year (within three days). The 2021 to 2025 average is the mean of those five values.
+- **API paging:** pulling several series in one request, sorted by period, repeats rows across pages once the result runs past two pages (found October 16, 2026, when gasoline was added). `fetch()` now pulls one series per request and fails on any duplicate. Every earlier number was recomputed after the change and none moved.
 - **Quirks:** the SPR weekly change is sometimes as small as 1 thousand barrels in weeks with no sales or loans (+1 in the week ending March 6), from DOE's accounting.
 - **Gaps:** the 1982-83 history skips weeks (28 days before September 24, 1982; 14 days before April 29, May 13 and June 3, 1983). A week-to-week change across those gaps covers more than one week. No number in this post uses those weeks; any all-history ranking of weekly changes should drop them.
 - **License:** U.S. government work, public domain.
@@ -36,3 +37,10 @@ All from `scripts/weekly_draws.py` -> `data/weekly_draws_numbers.json`, independ
 | Lowest for this week since 1982; next lowest 2022 | 106.1M | distillate_same_week_rank_low, distillate_same_week_next_lowest |
 | Below 2021-25 average | 12.2% | distillate_vs_5yr_pct |
 | Lower now than at the Aug 23 diesel post | 105.6M (week ending Aug 14) | distillate_at_aug23_post |
+| Gasoline rise, percent, level | 3.5M, 1.7%, 208.3M | gasoline_change, gasoline_change_pct, gasoline_level |
+| Largest weekly gasoline gain since the war began | rank 1 | gasoline_build_rank_since_war |
+| Gasoline below 2021-25 average | 4.4% | gasoline_vs_5yr_pct |
+| Earlier years with lower gasoline this week | 15 of 36 | gasoline_same_week_years_lower, gasoline_same_week_years minus 2026 |
+| Gasoline GIF alt text: above the band to week 16, inside from week 17 (late April), week 41 just below the average (208.3 vs 209.5) | | checked against avg_band() in scripts/animate_seasonality.py |
+
+The gasoline figures were added October 16, 2026 and have not had an independent tie-out.

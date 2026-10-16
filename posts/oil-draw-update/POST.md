@@ -18,7 +18,11 @@ dividers: false
 
 # Oil Update: The Biggest Commercial Crude Draw of the War
 
-The Energy Information Administration (EIA) released its weekly oil inventory report on Thursday, October 15, a day later than usual because of the Columbus Day holiday. It covers the week ending October 9. Here is a quick update on crude oil and diesel, followed by a guide to everything we have written on the 2026 energy crisis.
+Yesterday, The Energy Information Administration (EIA) released its weekly oil inventory report - a day later than usual because of the Columbus Day holiday. It covers the week ending October 9. 
+
+The report showed the largest commercial crude oil draw since before the war started. We figured we should flag this for you, not because anything can be done about it at this stage, but because it's a good chance to understand how we let this happen. To assist you with that, we've included links to a selection of our writing on oil markets over the past month. We do this not to take a victory lap. There are no winners with what is going on here. It's to illustrate how valuable it is to have a basic level of education on things like how a refinery works. I constantly wonder: if we all knew how a refinery worked back in March, would we have done something differently to avoid this fate? I'll never know the answer, but if [D4TP's vision](https://www.data4thepeople.com/p/welcome-to-data4thepeople) plays out, there will be a day when we all see to the raging tempest of noise to a shared truth.
+
+That said, here's the update on yesterday's data.
 
 ## Crude oil: a big draw, and none of it from the reserve
 
@@ -44,9 +48,18 @@ The animation below draws every year of diesel stocks since 1982, then slows dow
 
 In August, we wrote that [we may be running out of the fuel that runs our economy](https://www.data4thepeople.com/p/running-out-of-diesel). Diesel stocks are lower now than they were then.
 
+## Gasoline: back in the normal range
+
+Gasoline looks better. Stocks rose 3.5 million barrels last week, a gain of 1.7%, to 208.3 million barrels. That was the largest weekly gain since the war began. Gasoline stocks are 4.4% below the average for the same week from 2021 to 2025, but they sit near the middle of the range since 1990: 15 of the 36 earlier years were lower at this point.
+
+The same animation for gasoline shows 2026 starting the year well above past years and falling back into the normal range by late April.
+
+![Animated line chart titled U.S. Total Gasoline: Weekly Seasonality. It shows gasoline stocks in million barrels by week of the year, one line per year from 1990 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It starts the year above the gray band, falls into it by late April, and ends at 208.3 million barrels in week 41, just below the dashed average.](images/03-gasoline-seasonality.gif)
+*Gasoline stocks by week of the year, 1990 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WGTSTUS1.*
+
 ## Our coverage of the 2026 energy crisis
 
-Since June, we have followed the war's effects on oil, fuel and the things made from them. Here are those pieces in one place, oldest first.
+Since June, we have followed the war's effects on oil, fuel and the things made from them. Here are a selection of those pieces in one place, oldest first.
 
 - [Even if oil falls, your gas might not. Here's why.](https://www.data4thepeople.com/p/even-if-oil-falls-your-gas-might-not) (June 3, 2026): why pump prices can stay high when crude falls, by looking at the refining margin.
 - [Accountability is Patriotism: Uncle Sam's Magic Oil Disappearing Act](https://www.data4thepeople.com/p/oil-circus) (July 3, 2026): U.S. crude stocks falling toward 40-year lows while crude exports continue.
@@ -60,10 +73,8 @@ Since June, we have followed the war's effects on oil, fuel and the things made 
 
 You can follow U.S. oil and fuel stocks each week in our [free petroleum inventory tool](https://www.data4thepeople.com/p/methodology-the-petroleum-inventory-seasonality-ch).
 
-[Eric: your closing]
-
 ::: divider
 
 ## About the data
 
-All figures come from EIA's Weekly Petroleum Status Report: commercial crude oil (series WCESTUS1), crude oil in the SPR (WCSSTUS1), total crude oil including the SPR (WCRSTUS1) and distillate fuel oil (WDISTUS1). Weekly commercial figures are estimates from a survey of companies, so any one week's change can be off, and EIA's monthly data later replaces them. The SPR figure is a count from the Department of Energy. "Since the war began" means the 32 weeks ending March 6 through October 9, 2026. For diesel, "this week of the year" compares the week ending October 9 with the week closest to the same date in every year since 1982.
+All figures come from EIA's Weekly Petroleum Status Report: commercial crude oil (series WCESTUS1), crude oil in the SPR (WCSSTUS1), total crude oil including the SPR (WCRSTUS1), distillate fuel oil (WDISTUS1) and total gasoline (WGTSTUS1). Weekly commercial figures are estimates from a survey of companies, so any one week's change can be off, and EIA's monthly data later replaces them. The SPR figure is a count from the Department of Energy. "Since the war began" means the 32 weeks ending March 6 through October 9, 2026. For diesel and gasoline, "this week of the year" compares the week ending October 9 with the week closest to the same date in every earlier year, since 1982 for diesel and 1990 for gasoline.

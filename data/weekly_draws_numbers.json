@@ -56,5 +56,14 @@
  "distillate_last_lower": [
   "2026-06-05",
   102101.0
- ]
+ ],
+ "gasoline_change": 3518.0,
+ "gasoline_level": 208262.0,
+ "gasoline_change_pct": 1.7182432696440433,
+ "gasoline_build_rank_since_war": 1,
+ "gasoline_same_week_years": 37,
+ "gasoline_same_week_years_lower": 15,
+ "gasoline_5yr_avg": 217956.6,
+ "gasoline_vs_5yr_pct": -4.447949729441547,
+ "gasoline_cum_change_since_war": -44868.0
 }

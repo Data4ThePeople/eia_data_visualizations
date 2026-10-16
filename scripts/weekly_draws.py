@@ -16,31 +16,33 @@ import matplotlib.dates as mdates
 from plot_style import *
 
 WAR_START = "2026-02-28"   # conflict begins; date as used in the SPR_explainer and Sulfur posts
-SERIES = {"WCRSTUS1": "total", "WCESTUS1": "commercial", "WCSSTUS1": "spr", "WDISTUS1": "distillate"}
+SERIES = {"WCRSTUS1": "total", "WCESTUS1": "commercial", "WCSSTUS1": "spr", "WDISTUS1": "distillate", "WGTSTUS1": "gasoline"}
 OUT_PNG = "posts/oil-draw-update/images/01-weekly-crude-draws.png"
 COMM, SPR = "#3987e5", "#c98500"   # house blue and yellow, validated together on #181A1B
 
 
 def fetch():
+    """One series per request, paged by offset. Sorting by period alone is not a stable order
+    across pages when several series share a period, which repeats some rows."""
     load_env()
-    p = {"api_key": get_key("EIA_API_KEY"), "frequency": "weekly", "data[0]": "value",
-         "start": "1982-01-01", "length": 5000, "sort[0][column]": "period", "sort[0][direction]": "asc"}
-    for i, s in enumerate(SERIES):
-        p[f"facets[series][{i}]"] = s
-    rows, off = [], 0
-    while True:
-        p["offset"] = off
-        for t in range(4):
-            try:
-                j = requests.get("https://api.eia.gov/v2/petroleum/stoc/wstk/data/", params=p, timeout=90).json()["response"]
+    rows = []
+    for sid in SERIES:
+        p = {"api_key": get_key("EIA_API_KEY"), "frequency": "weekly", "data[0]": "value", "facets[series][0]": sid,
+             "start": "1982-01-01", "length": 5000, "sort[0][column]": "period", "sort[0][direction]": "asc"}
+        off = 0
+        while True:
+            p["offset"] = off
+            for t in range(4):
+                try:
+                    j = requests.get("https://api.eia.gov/v2/petroleum/stoc/wstk/data/", params=p, timeout=90).json()["response"]
+                    break
+                except Exception:
+                    if t == 3:
+                        raise
+            rows += j["data"]
+            off += 5000
+            if off >= int(j["total"]):
                 break
-            except Exception:
-                if t == 3:
-                    raise
-        rows += j["data"]
-        off += 5000
-        if off >= int(j["total"]):
-            break
     df = pd.DataFrame(rows)
     if df.duplicated(["period", "series"]).any():
         raise SystemExit("duplicate period/series rows from EIA")
@@ -91,6 +93,17 @@ def numbers(w):
     n["distillate_rank_draw_since_war"] = int((war.distillate < d.distillate.iloc[-1]).sum() + 1)
     lowsince = w.distillate[(w.distillate <= w.distillate.iloc[-1]) & (w.index < last)]
     n["distillate_last_lower"] = [str(lowsince.index[-1].date()), lowsince.iloc[-1]]
+    # gasoline (series starts 1990), same same-week method as diesel
+    g = w.gasoline.dropna(); gd = g.diff(); gwar = gd[gd.index > WAR_START]
+    gsame = g.groupby(g.index.year).apply(lambda s: s.iloc[(s.index.dayofyear - doy).to_series().abs().argmin()]
+                                          if (abs(s.index.dayofyear - doy) <= 3).any() else None).dropna()
+    n["gasoline_change"], n["gasoline_level"] = gd.iloc[-1], g.iloc[-1]
+    n["gasoline_change_pct"] = 100 * gd.iloc[-1] / g.iloc[-2]
+    n["gasoline_build_rank_since_war"] = int((gwar > gd.iloc[-1]).sum() + 1)
+    n["gasoline_same_week_years"], n["gasoline_same_week_years_lower"] = len(gsame), int((gsame < g.iloc[-1]).sum())
+    ga5 = gsame.loc[last.year - 5:last.year - 1]
+    n["gasoline_5yr_avg"], n["gasoline_vs_5yr_pct"] = ga5.mean(), 100 * (g.iloc[-1] / ga5.mean() - 1)
+    n["gasoline_cum_change_since_war"] = g.iloc[-1] - g[g.index <= WAR_START].iloc[-1]
     return d, n
 
 
