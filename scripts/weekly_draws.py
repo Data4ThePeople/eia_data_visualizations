@@ -107,9 +107,14 @@ def numbers(w):
     return d, n
 
 
-def chart(d, n, out=OUT_PNG, size=(11, 6.6)):
+def chart(d, n, out=OUT_PNG, size=(11, 6.6), upto=None):
+    """upto=k draws only the first k war weeks inside the finished chart's frame (for the
+    social animation); out=None returns the figure instead of saving it."""
     use_house_style()
-    war = d[d.index > WAR_START] / 1000
+    full = d[d.index > WAR_START] / 1000
+    k = len(full) if upto is None else upto
+    final = k == len(full)
+    war = full.iloc[:k]
     x = war.index
     fig, ax = plt.subplots(figsize=size)
     fig.subplots_adjust(left=0.08, right=0.97, top=0.965 - 1.3 / size[1], bottom=0.14)
@@ -127,20 +132,25 @@ def chart(d, n, out=OUT_PNG, size=(11, 6.6)):
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     AP = {3: "March", 4: "April", 5: "May", 6: "June", 7: "July", 8: "Aug.", 9: "Sept.", 10: "Oct."}
     ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: AP.get(mdates.num2date(v).month, mdates.num2date(v).strftime("%b."))))
-    ax.set_xlim(x[0] - pd.Timedelta(days=6), x[-1] + pd.Timedelta(days=6))
+    ax.set_xlim(full.index[0] - pd.Timedelta(days=6), full.index[-1] + pd.Timedelta(days=6))
     big = pd.Timestamp(n["largest_total_draw_week"])
-    ax.annotate(f'Largest: {-n["largest_total_draw"]/1000:.1f} million\nweek ending May 15',
-                (big, n["largest_total_draw"] / 1000), xytext=(-16, 0), textcoords="offset points",
-                ha="right", va="center", color=INK_DIM, fontsize=9.5, linespacing=1.3)
-    last = x[-1]
-    # call out the latest week: an outline around its bar
-    ax.add_patch(plt.Rectangle((last - pd.Timedelta(days=4.6), n["total_change"] / 1000 - 0.9), pd.Timedelta(days=9.2),
-                               -n["total_change"] / 1000 + 1.8, fill=False, edgecolor=INK, lw=1.6,
-                               joinstyle="round", zorder=5))
-    ax.annotate(f'Oct. 9: {-n["total_change"]/1000:.1f} million,\nall commercial',
-                (last, n["total_change"] / 1000), xytext=(-22, -4), textcoords="offset points",
-                ha="right", va="top", color=INK, fontsize=10, fontweight="bold", linespacing=1.3)
-    ax.set_ylim(min(-21, war.total.min() - 4), max(war[["commercial"]].max().max(), 8) + 3)
+    if big <= x[-1]:
+        ax.annotate(f'Largest: {-n["largest_total_draw"]/1000:.1f} million\nweek ending May 15',
+                    (big, n["largest_total_draw"] / 1000), xytext=(-16, 0), textcoords="offset points",
+                    ha="right", va="center", color=INK_DIM, fontsize=9.5, linespacing=1.3)
+    last = full.index[-1]
+    if final:
+        # call out the latest week: an outline around its bar
+        ax.add_patch(plt.Rectangle((last - pd.Timedelta(days=4.6), n["total_change"] / 1000 - 0.9),
+                                   pd.Timedelta(days=9.2), -n["total_change"] / 1000 + 1.8, fill=False,
+                                   edgecolor=INK, lw=1.6, joinstyle="round", zorder=5))
+        ax.annotate(f'Oct. 9: {-n["total_change"]/1000:.1f} million,\nall commercial',
+                    (last, n["total_change"] / 1000), xytext=(-22, -4), textcoords="offset points",
+                    ha="right", va="top", color=INK, fontsize=10, fontweight="bold", linespacing=1.3)
+    ax.set_ylim(min(-21, full.total.min() - 4), max(full[["commercial"]].max().max(), 8) + 3)
+    if not final:   # running date while the bars draw in; a real week-ending date, nothing interpolated
+        ax.text(0.985, 0.95, f"Week ending {x[-1]:%B} {x[-1].day}", transform=ax.transAxes, ha="right", va="top",
+                color=INK_DIM, fontsize=13, fontweight="bold")
     titleblock(fig, "Weekly change in U.S. crude oil stocks since the war began",
                "Bars split each week into commercial stocks and the Strategic Petroleum Reserve. "
                "The white tick is the total.\nWeeks ending March 6 to October 9, 2026.")
@@ -151,6 +161,8 @@ def chart(d, n, out=OUT_PNG, size=(11, 6.6)):
         x0 = fig.transFigure.inverted().transform(t.get_window_extent(r))[1][0] + 0.3 / fig.get_figwidth()
     credit(fig, "Source: U.S. Energy Information Administration, Weekly Petroleum Status Report "
                 "\n(series WCESTUS1, WCSSTUS1, WCRSTUS1). Total is EIA's published crude total, commercial plus SPR.")
+    if out is None:
+        return fig
     fig.savefig(out)
 
 
