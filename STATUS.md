@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: oil-draw-update
-Step: 2g
+Step: done
 Since: 2026-10-16
 
 ## Steps
@@ -20,7 +20,7 @@ Since: 2026-10-16
 | 2d | Hero 1680x1080 + alt text | 2026-10-16 | Own render (scripts/hero.py), latest week outlined; alt 430 characters |
 | 2e | SEO | 2026-10-16 | Meta title 57, description 150, 7 keywords; Common questions, four entries |
 | 2f | Pushed to Prismic (draft) | 2026-10-16 | Draft atH3hRIAACoAnOPg, Migration Release; updated once after Eric's diesel sentence |
-| 2g | Mailchimp teaser | | |
+| 2g | Mailchimp teaser | 2026-10-16 | Eric's subject and call to action; email chart is the crude seasonality view |
 
 ## Stale
 
@@ -51,3 +51,4 @@ None.
 - 2026-10-16 Email: GIF sentence added at Eric's request. Each GIF draws in 18.0 s (diesel) and 17.4 s (gasoline) before a 5 s hold; diesel 1982-2026 is 45 years, gasoline 1990-2026 is 37 years.
 - 2026-10-16 Email chart changed at Eric's request: a static render of the seasonality tool set to crude oil incl. SPR (scripts/animate_seasonality.py total --static -> images/email-crude-seasonality.png), not in the post. Alt checked: 2026 inside the band weeks 9-16 only, 698.6 in week 41, lower only in 1982 (614.0); 1983 was 699.2.
 - 2026-10-16 Eric asked why gasoline starts in 1990. Confirmed in the API and EIA's spreadsheets: all weekly U.S. gasoline series start January 5, 1990 (blending components alone from 1983). Recorded in DATASETS.md.
+- 2026-10-16 Eric confirmed 2g. Post oil-draw-update is complete through 2g. Not done: social posts (not yet asked for).
