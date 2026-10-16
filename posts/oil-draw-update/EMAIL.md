@@ -3,7 +3,7 @@
 Post URL: https://www.data4thepeople.com/p/oil-draw-update
 
 ```
-Subject:  D4T: War's biggest commercial crude draw
+Subject:  D4T: War's top commercial crude draw
 Preview:  Diesel stocks are the lowest for this time of year since 1982. Gasoline looks better.
 ```
 
