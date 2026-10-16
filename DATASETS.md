@@ -43,4 +43,4 @@ All from `scripts/weekly_draws.py` -> `data/weekly_draws_numbers.json`, independ
 | Earlier years with lower gasoline this week | 15 of 36 | gasoline_same_week_years_lower, gasoline_same_week_years minus 2026 |
 | Gasoline GIF alt text: above the band to week 16, inside from week 17 (late April), week 41 just below the average (208.3 vs 209.5) | | checked against avg_band() in scripts/animate_seasonality.py |
 
-The gasoline figures were added October 16, 2026 and have not had an independent tie-out.
+The gasoline figures were added October 16, 2026. Independent tie-out the same day (fresh agent, own API pull plus EIA's history spreadsheet, 1,919 weeks, no mismatches): every figure supported. Notes: 15 of 36 is a thin margin (2001 is 77 thousand barrels above 2026); 2026 dips just under the band in week 28 (210.5 against 211.0) and is inside it every other week from 17 to 41; 3 earlier years were higher than 2026 in week 1, so the text says "well above the usual range".

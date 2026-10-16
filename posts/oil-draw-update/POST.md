@@ -52,7 +52,7 @@ In August, we wrote that [we may be running out of the fuel that runs our econom
 
 Gasoline looks better. Stocks rose 3.5 million barrels last week, a gain of 1.7%, to 208.3 million barrels. That was the largest weekly gain since the war began. Gasoline stocks are 4.4% below the average for the same week from 2021 to 2025, but they sit near the middle of the range since 1990: 15 of the 36 earlier years were lower at this point.
 
-The same animation for gasoline shows 2026 starting the year well above past years and falling back into the normal range by late April.
+The same animation for gasoline shows 2026 starting the year well above the usual range and falling back into the normal range by late April.
 
 ![Animated line chart titled U.S. Total Gasoline: Weekly Seasonality. It shows gasoline stocks in million barrels by week of the year, one line per year from 1990 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It starts the year above the gray band, falls into it by late April, and ends at 208.3 million barrels in week 41, just below the dashed average.](images/03-gasoline-seasonality.gif)
 *Gasoline stocks by week of the year, 1990 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WGTSTUS1.*
