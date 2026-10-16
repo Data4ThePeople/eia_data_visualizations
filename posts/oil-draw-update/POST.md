@@ -6,9 +6,9 @@ date: 2026-10-16
 section: Data 4 Thought
 hero: images/oil-draw-update-hero-1680x1080.png
 hero_alt: Headline in blue reads 8.6 million barrels, of commercial crude drawn in one week, the most since the war began, under a small label reading Oil Update. Below it, a bar chart of weekly changes in U.S. crude oil stocks since March, split into commercial stocks in blue and the Strategic Petroleum Reserve in gold. Earlier weeks are dimmed, with deep gold draws in May and June. The last bar, October 9, is bright blue and outlined.
-meta_title:
-description:
-keywords:
+meta_title: Oil Inventories: Biggest Commercial Crude Draw of the War
+description: EIA data for the week ending October 9, 2026: the largest commercial crude draw since the war began, and diesel stocks at a low for this time of year.
+keywords: EIA weekly petroleum status report, U.S. crude oil inventories, commercial crude oil draw, diesel inventories 2026, Strategic Petroleum Reserve drawdown, gasoline inventories, 2026 energy crisis
 schema_type: article
 drop_cap: true
 heading_spacer: 20px

@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: oil-draw-update
-Step: 2c
+Step: 2e
 Since: 2026-10-16
 
 ## Steps
@@ -16,8 +16,8 @@ Since: 2026-10-16
 | 1  | Exploration and analysis | 2026-10-15 | Own and independent tie-outs pass |
 | 2a | Draft with brackets resolved | 2026-10-16 | Claude drafted at Eric's instruction; diesel GIF added |
 | 2b | Eric's edit, Claude's look-over | 2026-10-16 | Brackets resolved (gasoline section and GIF, intro link, no closing); edits 1-5 accepted; gasoline tie-out passed |
-| 2c | Slice markup | | |
-| 2d | Hero 1680x1080 + alt text | | |
+| 2c | Slice markup | 2026-10-16 | No fences needed; 19 slices, 3 images, divider once |
+| 2d | Hero 1680x1080 + alt text | 2026-10-16 | Own render (scripts/hero.py), latest week outlined; alt 430 characters |
 | 2e | SEO | | |
 | 2f | Pushed to Prismic (draft) | | |
 | 2g | Mailchimp teaser | | |
@@ -42,3 +42,5 @@ None.
 - 2026-10-16 2c: defaults only, no fences needed (no embeds; divider already above About the data). Importer convert-only: 37 blocks, 19 slices, 3 images, divider once. Hero warnings expected until 2d.
 - 2026-10-16 2d: hero from the crude draws chart (Eric's choice). scripts/weekly_draws.py now also renders the chart on a 9.4x6.0 in canvas (images/oil-draw-update-hero-source.png) so type stays legible, padded by hero pad to images/oil-draw-update-hero-1680x1080.png. Legend and plot top now placed in inches, which also re-spaced the in-post chart (layout only, same data). hero_alt 440 characters. hero check and importer: no warnings.
 - 2026-10-16 2d redone at Eric's request: hero is now its own render (scripts/hero.py), modeled on the SNAP_Locations series heroes: no axes or fine print, earlier weeks dimmed, the October 9 bar bright and outlined, lockup (Oil Update / 8.6 MILLION BARRELS / of commercial crude drawn in one week, the most since the war began / legend) above the bars, all inside the 0.18-0.82 square-crop band. Padded-chart hero source removed. The in-post crude chart also outlines the October 9 bar (Eric's suggestion). hero_alt rewritten (430 characters).
+- 2026-10-16 Eric confirmed 2d. Step 2e opened. Eric gave no target searches; Claude chose them.
+- 2026-10-16 2e: meta_title 57, description 150, 7 keywords; schema Article, section Data 4 Thought. Common questions section proposed to Eric, not applied.
