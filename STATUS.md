@@ -40,3 +40,4 @@ None.
 - 2026-10-16 Independent tie-out of the gasoline section: all figures supported. Claude's own sentence changed from "well above past years" to "well above the usual range" (3 earlier years were higher in week 1).
 - 2026-10-16 Eric confirmed 2b. Step 2c opened.
 - 2026-10-16 2c: defaults only, no fences needed (no embeds; divider already above About the data). Importer convert-only: 37 blocks, 19 slices, 3 images, divider once. Hero warnings expected until 2d.
+- 2026-10-16 2d: hero from the crude draws chart (Eric's choice). scripts/weekly_draws.py now also renders the chart on a 9.4x6.0 in canvas (images/oil-draw-update-hero-source.png) so type stays legible, padded by hero pad to images/oil-draw-update-hero-1680x1080.png. Legend and plot top now placed in inches, which also re-spaced the in-post chart (layout only, same data). hero_alt 440 characters. hero check and importer: no warnings.

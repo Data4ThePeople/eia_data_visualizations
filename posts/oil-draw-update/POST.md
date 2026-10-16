@@ -5,7 +5,7 @@ slug: oil-draw-update
 date: 2026-10-16
 section: Data 4 Thought
 hero: images/oil-draw-update-hero-1680x1080.png
-hero_alt:
+hero_alt: Bar chart titled Weekly change in U.S. crude oil stocks since the war began, weeks ending March 6 to October 9, 2026, in million barrels. Each weekly bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June, led by a 17.8 million barrel drop in the week ending May 15. The last bar, October 9, is an 8.6 million barrel drop, all commercial.
 meta_title:
 description:
 keywords:

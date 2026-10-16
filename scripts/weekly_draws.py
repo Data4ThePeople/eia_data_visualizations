@@ -107,12 +107,12 @@ def numbers(w):
     return d, n
 
 
-def chart(d, n):
+def chart(d, n, out=OUT_PNG, size=(11, 6.6)):
     use_house_style()
     war = d[d.index > WAR_START] / 1000
     x = war.index
-    fig, ax = plt.subplots(figsize=(11, 6.6))
-    fig.subplots_adjust(left=0.08, right=0.97, top=0.80, bottom=0.14)
+    fig, ax = plt.subplots(figsize=size)
+    fig.subplots_adjust(left=0.08, right=0.97, top=0.965 - 1.3 / size[1], bottom=0.14)
     width = 5.2
     pos_base = pd.Series(0.0, index=x); neg_base = pd.Series(0.0, index=x)
     for col, color in [("commercial", COMM), ("spr", SPR)]:
@@ -140,12 +140,14 @@ def chart(d, n):
     titleblock(fig, "Weekly change in U.S. crude oil stocks since the war began",
                "Bars split each week into commercial stocks and the Strategic Petroleum Reserve. "
                "The white tick is the total.\nWeeks ending March 6 to October 9, 2026.")
-    fig.text(0.03, 0.835, "Commercial", color=COMM, fontsize=11, fontweight="bold", va="center")
-    fig.text(0.135, 0.835, "Strategic Petroleum Reserve", color=SPR, fontsize=11, fontweight="bold", va="center")
-    fig.text(0.375, 0.835, "Total", color=INK, fontsize=11, fontweight="bold", va="center")
+    x0, r = 0.03, fig.canvas.get_renderer()
+    leg_y = 0.965 - 1.0 / fig.get_figheight()      # legend a fixed distance (inches) under the title
+    for word, c in [("Commercial", COMM), ("Strategic Petroleum Reserve", SPR), ("Total", INK)]:
+        t = fig.text(x0, leg_y, word, color=c, fontsize=11, fontweight="bold", va="center")
+        x0 = fig.transFigure.inverted().transform(t.get_window_extent(r))[1][0] + 0.3 / fig.get_figwidth()
     credit(fig, "Source: U.S. Energy Information Administration, Weekly Petroleum Status Report "
                 "\n(series WCESTUS1, WCSSTUS1, WCRSTUS1). Total is EIA's published crude total, commercial plus SPR.")
-    fig.savefig(OUT_PNG)
+    fig.savefig(out)
 
 
 if __name__ == "__main__":
@@ -155,4 +157,6 @@ if __name__ == "__main__":
     pd.concat([w, d.add_suffix("_chg")], axis=1).loc["2025-12-01":].to_csv("data/weekly_draws.csv", float_format="%.0f")
     json.dump(n, open("data/weekly_draws_numbers.json", "w"), indent=1, default=float)
     chart(d, n)
+    # hero source: same chart on a smaller canvas so type stays legible once padded to 1680x1080
+    chart(d, n, out="posts/oil-draw-update/images/oil-draw-update-hero-source.png", size=(9.4, 6.0))
     print(json.dumps(n, indent=1, default=float))
