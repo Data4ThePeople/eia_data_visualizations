@@ -5,7 +5,9 @@ prior years shaded by decade, 2026 in bold red, average and interquartile band o
 years. Prior years rush by, then 2026 draws in one week at a time, and the finished chart
 holds. The label on the 2026 line shows only real weekly values.
 
-    python scripts/animate_seasonality.py [distillate|gasoline]
+    python scripts/animate_seasonality.py [distillate|gasoline|total] [--static]
+
+--static renders only the finished chart as a PNG (used for the email chart).
 """
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
@@ -22,13 +24,17 @@ from weekly_draws import fetch
 PRODUCTS = {  # column, file stem, title, series id, series description
     "distillate": ("02-diesel-seasonality", "U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality", "WDISTUS1",
                    "distillate fuel oil"),
+    "total": ("email-crude-seasonality", "U.S. Crude Oil (incl. SPR): Weekly Seasonality", "WCRSTUS1",
+              "crude oil, including the SPR"),
     "gasoline": ("03-gasoline-seasonality", "U.S. Total Gasoline: Weekly Seasonality", "WGTSTUS1",
                  "total motor gasoline"),
 }
-PRODUCT = sys.argv[1] if len(sys.argv) > 1 else "distillate"
+ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+STATIC = "--static" in sys.argv
+PRODUCT = ARGS[0] if ARGS else "distillate"
 STEM, TITLE, SERIES_ID, SERIES_DESC = PRODUCTS[PRODUCT]
 OUT = f"posts/oil-draw-update/images/{STEM}.gif"
-LAST_PNG = f"posts/oil-draw-update/images/{STEM}-final.png"
+LAST_PNG = f"posts/oil-draw-update/images/{STEM}{'' if STATIC else '-final'}.png"
 LOGO = os.path.expanduser("~/PycharmProjects/WarTaxViz/logos/d4tp-text-dark@2x.png")
 CUR_RED = "#c0392b"
 DECADES = {  # light (first year of decade) to dark (last), same values as the tool
@@ -97,6 +103,8 @@ def main():
     for n in range(1, len(cw) + 1):
         frames.append((len(prior), None, 1, n, True, 240 if n < len(cw) - 4 else 400))
     frames[-1] = frames[-1][:5] + (int(HOLD_S * 1000),)
+    if STATIC:
+        frames = frames[-1:]
 
     ymin = min(v.min() for _, v in ys.values()); ymax = max(v.max() for _, v in ys.values())
     # brand file is white on black; flatten on white and invert for a white background
@@ -160,6 +168,9 @@ def main():
         plt.close(fig)
         imgs.append(im); durs.append(dur)
     imgs[-1].save(LAST_PNG)
+    if STATIC:
+        print(f"static -> {LAST_PNG}")
+        return
     # one shared palette from a strip of frames across the whole run, so every color used survives
     pick = imgs[:: max(1, len(imgs) // 12)] + [imgs[-1]]
     strip = Image.new("RGB", (imgs[0].width, imgs[0].height * len(pick)))

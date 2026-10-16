@@ -29,10 +29,10 @@ The report showed the largest commercial crude oil draw since before the war sta
 
 ## 4. Chart
 
-`images/01-weekly-crude-draws.png`
+`images/email-crude-seasonality.png` (the petroleum inventory tool set to crude oil; not in the post, by Eric's choice)
 Alt:
 ```
-Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is outlined: a blue-only draw of 8.6 million barrels.
+Line chart titled U.S. Crude Oil (incl. SPR): Weekly Seasonality. It shows U.S. crude oil stocks, including the Strategic Petroleum Reserve, in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line in bold red starts below the band, rises just into it from late February to mid-April, then falls to 698.6 million barrels in week 41, below every past year at that point except 1982.
 ```
 
 ## 5. Body, part two
