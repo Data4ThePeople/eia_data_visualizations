@@ -1,0 +1,575 @@
+{
+  "page_title": "Oil Update: The Biggest Commercial Crude Draw of the War",
+  "page_subtitle": "U.S. crude stocks fell 8.6 million barrels last week, all of it from commercial tanks. Diesel stocks are the lowest for this time of year since 1982.",
+  "published_date": "2026-10-16",
+  "updated_date": "2026-10-16",
+  "make_this_main_post": false,
+  "slices": [
+    {
+      "slice_type": "drop_cap",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "drop_cap_text": [
+          {
+            "type": "paragraph",
+            "text": "Yesterday, the Energy Information Administration (EIA) released its weekly oil inventory report, a day later than usual because of the Columbus Day holiday. It covers the week ending October 9.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The report showed the largest commercial crude oil draw since before the war started. We figured we should flag this for you, not because anything can be done about it at this stage, but because it's a good chance to understand how we let this happen. To assist you with that, we've included links to a selection of our writing on oil markets over the past few months. We do this not to take a victory lap. There are no winners with what is going on here. It's to illustrate how valuable it is to have a basic level of education on things like how a refinery works. I constantly wonder: if we had all known how a refinery worked back in March, would we have done something differently to avoid this fate? I'll never know the answer, but if D4TP's vision plays out, there will be a day when we all see through the raging tempest of noise to a shared truth.",
+            "spans": [
+              {
+                "start": 740,
+                "end": 753,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/welcome-to-data4thepeople",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "That said, here's the update on yesterday's data.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Crude oil: a big draw, and none of it from the reserve",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "U.S. crude oil stocks fell 8.6 million barrels last week. That figure combines two parts: commercial stocks, held by companies, and the Strategic Petroleum Reserve (SPR), held by the government. All of last week's drop came from commercial stocks. It was the largest weekly drop in commercial crude since the war began on February 28.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "It was not the largest drop in total crude, though. The chart below shows the weekly change in both parts since the war began.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Bar chart titled Weekly change in U.S. crude oil stocks since the war began, for the 32 weeks ending March 6 to October 9, 2026, in million barrels. Each bar is split into commercial stocks in blue and the Strategic Petroleum Reserve in gold, with a white tick for the total. Large gold draws fill May and June; the largest total draw is 17.8 million barrels in the week ending May 15. The last bar, October 9, is a blue-only draw of 8.6 million barrels.",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Weekly change in U.S. crude oil stocks, commercial and Strategic Petroleum Reserve, weeks ending March 6 to October 9, 2026. Source: EIA Weekly Petroleum Status Report.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 168,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The biggest weeks came in May and June, when the SPR was releasing the most oil. The largest was the week ending May 15, when total stocks fell 17.8 million barrels, and 56% of that came from the reserve. Last week ranks 11th of the 32 weeks since the war began. It was the largest total drop since the week ending July 24.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "What stands out is that the SPR did not change at all. Last week was the first week since March 20 without a draw from the reserve. Since the war began, total crude stocks have fallen 156.2 million barrels, and 132.5 million of that, or 85%, came from the SPR. As we covered in Meet the Speculative Petroleum Reserve, the government has been lending that oil to companies in rounds. In our view, the reserve will likely start to draw again once the current round of loans is awarded.",
+            "spans": [
+              {
+                "start": 278,
+                "end": 316,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/spr-exchange",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Diesel: the lowest for this time of year since 1982",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Diesel stocks fell 2.5 million barrels last week, a drop of 2.4%, to 102.6 million barrels. (EIA counts diesel and heating oil together as distillate fuel oil.) That is the lowest level for this week of the year in EIA's weekly data, which goes back to 1982. The next lowest was 106.1 million barrels in 2022. Stocks are 12.2% below the average for the same week from 2021 to 2025.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "The animation below draws every year of diesel stocks since 1982, then slows down to add 2026 one week at a time.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Animated line chart titled U.S. Distillate Fuel Oil (Diesel): Weekly Seasonality. It shows diesel stocks in million barrels by week of the year, one line per year from 1982 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It drops below the gray band in late May, stays below it, and ends at 102.6 million barrels in week 41, below every past year at that point.",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Diesel and heating oil stocks by week of the year, 1982 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WDISTUS1.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 165,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "In August, we wrote that we may be running out of the fuel that runs our economy. Diesel stocks are lower now than they were then.",
+            "spans": [
+              {
+                "start": 25,
+                "end": 80,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/running-out-of-diesel",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Gasoline: back in the normal range",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Gasoline looks better. Stocks rose 3.5 million barrels last week, a gain of 1.7%, to 208.3 million barrels. That was the largest weekly gain since the war began. Gasoline stocks are 4.4% below the average for the same week from 2021 to 2025, but they sit near the middle of the range since 1990: 15 of the 36 earlier years were lower at this point.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "The same animation for gasoline shows 2026 starting the year well above the usual range and falling back into the normal range by late April.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Animated line chart titled U.S. Total Gasoline: Weekly Seasonality. It shows gasoline stocks in million barrels by week of the year, one line per year from 1990 to 2025, colored by decade, with a dashed average and a gray band for the middle half of past years. The 2026 line is drawn last in bold red, one week at a time. It starts the year above the gray band, falls into it by late April, and ends at 208.3 million barrels in week 41, just below the dashed average.",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Gasoline stocks by week of the year, 1990 to 2026. The red line is 2026, through the week ending October 9. Source: EIA weekly stocks, series WGTSTUS1.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 151,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Our coverage of the 2026 energy crisis",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Since June, we have followed the war's effects on oil, fuel and the things made from them. Here is a selection of those pieces in one place, oldest first.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Even if oil falls, your gas might not. Here's why. (June 3, 2026): why pump prices can stay high when crude falls, by looking at the refining margin.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 50,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/even-if-oil-falls-your-gas-might-not",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Accountability is Patriotism: Uncle Sam's Magic Oil Disappearing Act (July 3, 2026): U.S. crude stocks falling toward 40-year lows while crude exports continue.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 68,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/oil-circus",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "RIP: U.S. Energy Strategy (July 23, 2026): why fuel prices depend on a refining mismatch that the war disrupted.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 25,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/rip-us-energy-strategy",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "We May Be Running Out of the Fuel That Runs Our Economy (August 23, 2026): diesel supplies near 30-year lows.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 55,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/running-out-of-diesel",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Turns out oil is close to $150, in real life, not on your screen (September 14, 2026): what a barrel of Middle East crude costs once it is delivered, with tankers avoiding the Strait of Hormuz.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 64,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/supertanker-rates",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Diesel Fuel Surcharge Calculator (September 23, 2026): a free tool that shows how diesel prices reach freight bills and consumer prices.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 32,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/fuel-surcharge-impact-viz",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Why you should care about sulfur (October 8, 2026): how the war tightened the supply of sulfur, a refinery byproduct used to make fertilizer.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 32,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/sulfur-shortage",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Meet the Speculative Petroleum Reserve (October 11, 2026): how the government is lending emergency oil, and who borrowed it.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 38,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/spr-exchange",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Sell It or Lend It? With Our Emergency Oil, the Devil Is in the Details (October 13, 2026): how the 2022 SPR sales compare with the 2026 loans.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 71,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/spr-sale-vs-loan",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "You can follow U.S. oil and fuel stocks each week in our free petroleum inventory tool.",
+            "spans": [
+              {
+                "start": 57,
+                "end": 86,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/methodology-the-petroleum-inventory-seasonality-ch",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "divider_dots",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {}
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "About the data",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "All figures come from EIA's Weekly Petroleum Status Report: commercial crude oil (series WCESTUS1), crude oil in the SPR (WCSSTUS1), total crude oil including the SPR (WCRSTUS1), distillate fuel oil (WDISTUS1) and total gasoline (WGTSTUS1). Weekly commercial figures are estimates from a survey of companies, so any one week's change can be off, and EIA's monthly data later replaces them. The SPR figure is a count from the Department of Energy. \"Since the war began\" means the 32 weeks ending March 6 through October 9, 2026. For diesel and gasoline, \"this week of the year\" compares the week ending October 9 with the week closest to the same date in every earlier year, since 1982 for diesel and 1990 for gasoline.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    }
+  ],
+  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Oil Update: The Biggest Commercial Crude Draw of the War\",\n  \"description\": \"\",\n  \"datePublished\": \"2026-10-16T07:00:00-04:00\",\n  \"dateModified\": \"2026-10-16T07:00:00-04:00\",\n  \"articleSection\": \"Data 4 Thought\",\n  \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n  \"inLanguage\": \"en-US\",\n  \"isAccessibleForFree\": true,\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Eric Pachman\",\n    \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Data 4 The People\",\n    \"url\": \"https://data4thepeople.com\"\n  },\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://www.data4thepeople.com/p/oil-draw-update\"\n  }\n}"
+}

@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: oil-draw-update
-Step: 2b
+Step: 2c
 Since: 2026-10-16
 
 ## Steps
@@ -15,7 +15,7 @@ Since: 2026-10-16
 |---|---|---|---|
 | 1  | Exploration and analysis | 2026-10-15 | Own and independent tie-outs pass |
 | 2a | Draft with brackets resolved | 2026-10-16 | Claude drafted at Eric's instruction; diesel GIF added |
-| 2b | Eric's edit, Claude's look-over | | |
+| 2b | Eric's edit, Claude's look-over | 2026-10-16 | Brackets resolved (gasoline section and GIF, intro link, no closing); edits 1-5 accepted; gasoline tie-out passed |
 | 2c | Slice markup | | |
 | 2d | Hero 1680x1080 + alt text | | |
 | 2e | SEO | | |
@@ -38,3 +38,5 @@ None.
 - 2026-10-16 Step 2b look-over. Brackets resolved at Eric's instruction: intro-page link (welcome-to-data4thepeople, from Eric); a gasoline section with its own animated GIF (images/03-gasoline-seasonality.gif); no closing, bracket removed. Gasoline figures added to scripts/weekly_draws.py; fetch() changed to one series per request after a five-series pull repeated rows across pages; all earlier numbers unchanged. Legend now lists only decades with data. Look-over edits to Eric's prose proposed in chat as a numbered list.
 - 2026-10-16 Eric accepted look-over edits 1 to 5 (lowercase the, comma for hyphen, past few months, had all known, see through, here is).
 - 2026-10-16 Independent tie-out of the gasoline section: all figures supported. Claude's own sentence changed from "well above past years" to "well above the usual range" (3 earlier years were higher in week 1).
+- 2026-10-16 Eric confirmed 2b. Step 2c opened.
+- 2026-10-16 2c: defaults only, no fences needed (no embeds; divider already above About the data). Importer convert-only: 37 blocks, 19 slices, 3 images, divider once. Hero warnings expected until 2d.
