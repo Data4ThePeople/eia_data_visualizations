@@ -47,4 +47,4 @@ The post has two animated GIFs that, in under 20 seconds each, replay the past 4
 
 ## 6. Call to action
 
-**[Read the full report](https://www.data4thepeople.com/p/oil-draw-update)**
+**[Read Today's D4T](https://www.data4thepeople.com/p/oil-draw-update)**
