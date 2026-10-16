@@ -48,3 +48,4 @@ None.
 - 2026-10-16 2f: dry run clean (46 blocks, 29 slices, 3 images + hero, FAQPage with 4 questions), then pushed. Prismic draft atH3hRIAACoAnOPg, uid oil-draw-update, in the Migration Release; tags and author empty. No read token, so the push could not be verified from this side.
 - 2026-10-16 After the push, Eric replaced the diesel follow-up sentence (heading into winter, heating oil). Same structure (46 blocks, 29 slices); 2b-2f re-run in place and the same Prismic draft updated.
 - 2026-10-16 Eric confirmed 2f. Step 2g opened: EMAIL.md drafted from the post text only; hero exported as images/oil-draw-update-hero-email.jpg (1680 wide, 63KB); email chart is images/01-weekly-crude-draws.png. Waiting for Eric to approve or reject.
+- 2026-10-16 Email: GIF sentence added at Eric's request. Each GIF draws in 18.0 s (diesel) and 17.4 s (gasoline) before a 5 s hold; diesel 1982-2026 is 45 years, gasoline 1990-2026 is 37 years.

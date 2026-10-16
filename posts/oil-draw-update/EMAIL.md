@@ -42,7 +42,7 @@ U.S. crude oil stocks fell 8.6 million barrels last week, and all of it came fro
 
 Diesel stocks fell to 102.6 million barrels. That is the lowest level for this week of the year in EIA's weekly data, which goes back to 1982. And we are now heading into the winter, which increases the demand for heating oil, a close cousin to diesel. Gasoline looks better.
 
-In the post, we animate every year of diesel and gasoline stocks since EIA's weekly records began, explain why we think the reserve will likely start to draw again, and link to our coverage of the 2026 energy crisis, from refinery margins to sulfur.
+The post has two animated GIFs that, in under 20 seconds each, replay the past 45 years of diesel stocks (back to 1982) and the past 37 years of gasoline stocks (back to 1990). We also explain why we think the reserve will likely start to draw again, and link to our coverage of the 2026 energy crisis, from refinery margins to sulfur.
 ```
 
 ## 6. Call to action
