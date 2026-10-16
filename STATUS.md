@@ -6,15 +6,15 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: oil-draw-update
-Step: 2a
-Since: 2026-10-15
+Step: 2b
+Since: 2026-10-16
 
 ## Steps
 
 | Step | What | Confirmed | Notes |
 |---|---|---|---|
 | 1  | Exploration and analysis | 2026-10-15 | Own and independent tie-outs pass |
-| 2a | Draft with brackets resolved | | |
+| 2a | Draft with brackets resolved | 2026-10-16 | Claude drafted at Eric's instruction; diesel GIF added |
 | 2b | Eric's edit, Claude's look-over | | |
 | 2c | Slice markup | | |
 | 2d | Hero 1680x1080 + alt text | | |
@@ -34,3 +34,4 @@ None.
 - 2026-10-15 Own tie-out passes. Independent tie-out (fresh agent, own API pull plus EIA history spreadsheets, 2,298 weeks per series, zero differences): every number and every bar on the chart matched. Applied its points: x-axis months in AP style; DATASETS.md wording on the total identity (holds every week since 1982), revisions, the +1 SPR quirk, and the 1982-83 gaps. Could not check: whether weekly values are ever revised (no vintage history).
 - 2026-10-15 Eric sent nine earlier energy-crisis links and confirmed Step 1 and the slug oil-draw-update. Step 2a opened. At Eric's instruction ("yes go ahead and draft it") Claude wrote the whole draft: crude update with the chart, diesel update, a reference list of the nine posts, a bracket for Eric's closing, and About the data. Publish date set to October 16 for Eric to confirm. Share figures (56% of the May 15 draw, 85% of the drop since the war from the SPR) and the diesel level at the August 23 post added to scripts/weekly_draws.py.
 - 2026-10-15 Step 2a: at Eric's request, an animated GIF of the diesel seasonality chart added to the diesel section (scripts/animate_seasonality.py -> images/02-diesel-seasonality.gif, 124 frames, 23 seconds, 0.44 MB). Same look, decade colors and average/IQR method as petroleum_seasonality_v2_viz.html; years before 2000 take one frame each, 2000s and 2010s two, 2020s four, then 2026 one week per frame at 240 ms, holding the final frame 5 seconds. The label on the 2026 line shows only real weekly values. Alt text checked against the data: 2026 is below the interquartile band from week 21 on, and below every past year in week 41 (lowest past value 106.2 by week index).
+- 2026-10-16 Eric confirmed 2a. Step 2b opened: Eric edits POST.md, then Claude looks it over.
