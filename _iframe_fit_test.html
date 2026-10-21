@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>iframe fit test harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font-family: system-ui, sans-serif; margin: 20px; background: #ddd; }
+  .case { margin-bottom: 28px; }
+  .case h2 { font-size: 14px; margin: 0 0 6px; }
+  .frame-box { background: #fff; outline: 2px solid #c00; }
+  iframe { border: 0; display: block; }
+  table { border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }
+  td, th { border: 1px solid #999; padding: 4px 10px; text-align: left; }
+  .pass { background: #cfc; }
+  .fail { background: #fcc; }
+  button { font-size: 14px; padding: 6px 12px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<h1 style="font-size:18px">Self-fit verification — production iframe heights at 3 widths + floor test</h1>
+<button id="recheck">Re-check</button>
+<table id="results"><tr><th>case</th><th>overflow (px)</th><th>chart height</th><th>verdict</th></tr></table>
+<div id="cases"></div>
+<script>
+const CASES = [
+  // [label, src, iframe height, container width, expected]
+  // expected: 'fit' = no inner scroll, chart between MIN and tier height
+  // 'floor' = chart pinned at MIN, inner scroll allowed
+  ['anim 900x1200', '/petroleum_seasonality_animation.html', 900, 1200, 'fit'],
+  ['anim 900x768',  '/petroleum_seasonality_animation.html', 900, 768,  'fit'],
+  ['anim 900x390',  '/petroleum_seasonality_animation.html', 900, 390,  'fitOrFloor'],
+  ['v2 900x1200',   '/petroleum_seasonality_v2_viz.html',    900, 1200, 'fit'],
+  ['v2 900x768',    '/petroleum_seasonality_v2_viz.html',    900, 768,  'fit'],
+  ['v2 900x390',    '/petroleum_seasonality_v2_viz.html',    900, 390,  'fitOrFloor'],
+  ['dot 710x1200',  '/inventory_dot_strip_viz.html',         710, 1200, 'fit'],
+  ['dot 710x768',   '/inventory_dot_strip_viz.html',         710, 768,  'fit'],
+  ['dot 710x390',   '/inventory_dot_strip_viz.html',         710, 390,  'fitOrFloor'],
+  ['anim 500x390 (floor)', '/petroleum_seasonality_animation.html', 500, 390, 'floor'],
+];
+const MINS = { '/petroleum_seasonality_animation.html': 300,
+               '/petroleum_seasonality_v2_viz.html': 300,
+               '/inventory_dot_strip_viz.html': 180 };
+const TIERS = { '/petroleum_seasonality_animation.html': {lg:500, sm:420, xs:370},
+                '/petroleum_seasonality_v2_viz.html':    {lg:500, sm:420, xs:370},
+                '/inventory_dot_strip_viz.html':         {lg:280, sm:250, xs:230} };
+
+const casesDiv = document.getElementById('cases');
+CASES.forEach(([label, src, h, w], i) => {
+  const d = document.createElement('div');
+  d.className = 'case';
+  d.innerHTML = `<h2>${label}</h2>
+    <div class="frame-box" style="width:${w}px">
+      <iframe id="f${i}" src="${src}" width="100%" height="${h}" loading="eager"></iframe>
+    </div>`;
+  casesDiv.appendChild(d);
+});
+
+function check(phase) {
+  const table = document.getElementById('results');
+  table.innerHTML = `<tr><th>case [${phase || 'initial'}]</th><th>overflow (px)</th><th>chart height</th><th>verdict</th></tr>`;
+  CASES.forEach(([label, src, h, w, expected], i) => {
+    const f = document.getElementById('f' + i);
+    let overflow = 'n/a', chartH = 'n/a', verdict = 'NO ACCESS';
+    try {
+      const doc = f.contentDocument;
+      overflow = doc.body.scrollHeight - doc.documentElement.clientHeight;
+      const gd = doc.getElementById('chart');
+      chartH = gd && gd._fullLayout ? gd._fullLayout.height : 'not plotted';
+      const tier = w >= 700 ? 'lg' : w >= 450 ? 'sm' : 'xs';
+      const min = MINS[src], max = TIERS[src][tier];
+      if (typeof chartH === 'number') {
+        const fits = overflow <= 1 && chartH >= min && chartH <= max;
+        const atFloor = chartH === min && overflow > 0;
+        if (expected === 'fit')          verdict = fits ? 'PASS' : 'FAIL';
+        else if (expected === 'fitOrFloor') verdict = fits ? 'PASS' : (atFloor ? 'FLOOR (designed fallback)' : 'FAIL');
+        else /* floor */                 verdict = atFloor ? 'PASS' : 'FAIL';
+      } else verdict = 'FAIL';
+    } catch (e) { verdict = 'ERR ' + e.message; }
+    const tr = table.insertRow();
+    tr.className = (verdict === 'PASS' || verdict.startsWith('FLOOR')) ? 'pass' : 'fail';
+    tr.innerHTML = `<td>${label} (expect ${expected})</td><td>${overflow}</td><td>${chartH}</td><td>${verdict}</td>`;
+  });
+}
+document.getElementById('recheck').addEventListener('click', () => check('manual'));
+
+// Exercise the main redraw paths inside each frame: switch product, then
+// start and stop playback/replay. The fit must hold through all of them.
+function interact() {
+  CASES.forEach((c, i) => {
+    try {
+      const doc = document.getElementById('f' + i).contentDocument;
+      const pills = doc.querySelectorAll('.product-pill');
+      if (pills.length > 1) pills[1].click();
+      const play = doc.getElementById('play-btn');
+      if (play) { play.click(); setTimeout(() => { try { play.click(); } catch (e) {} }, 600); }
+    } catch (e) {}
+  });
+}
+
+window.addEventListener('load', () => setTimeout(() => {
+  check('initial');
+  interact();
+  setTimeout(() => check('post-interaction'), 2500);
+}, 800));
+</script>
+</body>
+</html>

@@ -755,6 +755,36 @@ const TIER_CFG = {{
   xs: {{height:370, margin:{{t:12,b:46,l:48,r:8}},  tickStep:8, titleSize:12, fontSize:11}},
 }};
 
+// ── Iframe self-fit ────────────────────────────────────────────────────────────
+// The site embeds this page in a fixed-height iframe it can't resize. When
+// framed, shrink the chart until the whole page fits window.innerHeight, so the
+// iframe never grows a second scrollbar. Clamped to the tier design height
+// above and MIN_CHART_H below — past the floor the page scrolls normally.
+// Standalone pages are untouched.
+const EMBEDDED = (() => {{ try {{ return window.self !== window.top; }} catch (e) {{ return true; }} }})();
+const MIN_CHART_H = 300;
+const FIT_SLACK   = 2;   // sub-pixel rounding guard
+
+function fittedHeight(tierH) {{
+  if (!EMBEDDED) return tierH;
+  // body.scrollHeight is the true content height (unlike documentElement's it
+  // isn't viewport-clamped); minus the chart's current height = the chrome.
+  // Correct even before the first plot (offsetHeight 0), and stateless, so
+  // repeated calls can grow the chart back as well as shrink it.
+  const chart  = document.getElementById('chart');
+  const chrome = document.body.scrollHeight - chart.offsetHeight;
+  const avail  = Math.floor(window.innerHeight - chrome - FIT_SLACK);
+  return Math.max(MIN_CHART_H, Math.min(tierH, avail));
+}}
+
+function refitChart() {{  // adjust an already-drawn chart in place
+  if (!EMBEDDED) return;
+  const gd = document.getElementById('chart');
+  if (!gd || !gd._fullLayout) return;
+  const h = fittedHeight(TIER_CFG[tierFor(window.innerWidth)].height);
+  if (Math.abs(gd._fullLayout.height - h) > 1) Plotly.relayout(gd, {{height: h}});
+}}
+
 function layoutFor(tier) {{
   const c = TIER_CFG[tier];
   const layout = {{
@@ -773,7 +803,7 @@ function layoutFor(tier) {{
     }},
     showlegend: false,
     font:{{family:'-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',size:c.fontSize}},
-    height: c.height,
+    height: fittedHeight(c.height),
     // Per-product revision: switching inventories discards the old axis
     // state (ranges autorange fresh); same-product redraws preserve zoom.
     uirevision: 'seasonality-' + currentProduct,
@@ -793,6 +823,7 @@ const config = {{responsive:true, displayModeBar:false}};
 // Plotly's responsive handler doesn't notice the narrower viewport on its own.
 Plotly.newPlot('chart', buildTraces(currentProduct), currentLayout(), config)
   .then(() => Plotly.Plots.resize('chart'));
+window.addEventListener('load', refitChart);
 
 function syncLegend() {{
   const bandOn = selectedDecades.size === ALL_DECADE_COUNT;
@@ -859,6 +890,8 @@ window.addEventListener('resize', () => {{
     if (t !== lastTier) {{
       lastTier = t;
       {redraw_call}
+    }} else {{
+      refitChart();   // same tier, but wrapping may have changed the chrome height
     }}
   }}, 150);
 }});

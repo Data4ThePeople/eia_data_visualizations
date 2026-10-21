@@ -274,6 +274,29 @@ const TIER_CFG = {
   xs: {height:230, margin:{t:12,b:48,l:8, r:8},  dot:7, curDot:12, nticks:5, titleSize:13, fontSize:12, tickFmt:','},
 };
 
+// ── Iframe self-fit ────────────────────────────────────────────────────────────
+// The site embeds this page in a fixed-height iframe it can't resize. When
+// framed, shrink the chart until the whole page fits window.innerHeight, so the
+// iframe never grows a second scrollbar. Clamped to the tier design height
+// above and MIN_CHART_H below — past the floor the page scrolls normally.
+// Standalone pages are untouched. render() runs on every resize settle, so the
+// fit is recomputed there with no extra hook.
+const EMBEDDED = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const MIN_CHART_H = 180;
+const FIT_SLACK   = 2;   // sub-pixel rounding guard
+
+function fittedHeight(tierH) {
+  if (!EMBEDDED) return tierH;
+  // body.scrollHeight is the true content height (unlike documentElement's it
+  // isn't viewport-clamped); minus the chart's current height = the chrome.
+  // Correct even before the first plot (offsetHeight 0), and stateless, so
+  // repeated calls can grow the chart back as well as shrink it.
+  const chart  = document.getElementById('chart');
+  const chrome = document.body.scrollHeight - chart.offsetHeight;
+  const avail  = Math.floor(window.innerHeight - chrome - FIT_SLACK);
+  return Math.max(MIN_CHART_H, Math.min(tierH, avail));
+}
+
 // ── State ──────────────────────────────────────────────────────────────────────
 let currentProduct = 'crude_oil';
 let currentWeek = LATEST_WEEK[currentProduct];
@@ -324,7 +347,9 @@ function plotDims(tier) {
   const w = document.getElementById('chart').clientWidth || 800;
   return {
     plotW: Math.max(w - c.margin.l - c.margin.r, 100),
-    plotH: c.height - c.margin.t - c.margin.b,
+    // The swarm packs dot rows from the drawn plot height, so it must use the
+    // same fitted height the layout will get, not the design height.
+    plotH: fittedHeight(c.height) - c.margin.t - c.margin.b,
   };
 }
 
@@ -440,7 +465,7 @@ function layoutFor(tier) {
     dragmode: false,
     font: {family: '-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif',
             size: c.fontSize, color: mutedColor()},
-    height: c.height,
+    height: fittedHeight(c.height),
     uirevision: 'dotstrip',
   };
 }
@@ -458,8 +483,10 @@ function updateHeadline() {
 const config = {responsive: true, displayModeBar: false};
 
 function render() {
-  Plotly.react('chart', buildTraces(lastTier), layoutFor(lastTier), config);
+  // Headline first: fittedHeight() measures the page, so the headline text
+  // must be in place before buildTraces/layoutFor compute the chart height.
   updateHeadline();
+  Plotly.react('chart', buildTraces(lastTier), layoutFor(lastTier), config);
 }
 
 const slider = document.getElementById('week-slider');
@@ -608,6 +635,7 @@ slider.max = LATEST_WEEK[currentProduct];
 slider.value = currentWeek;
 syncChips();
 setPlayIcon();
+updateHeadline();   // before the first plot, so the self-fit sees the real page height
 // Re-render once mounted: the initial render can add a scrollbar, changing the
 // chart width the beeswarm was computed against.
 Plotly.newPlot('chart', buildTraces(lastTier), layoutFor(lastTier), config)
